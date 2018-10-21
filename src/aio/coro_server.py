@@ -5,6 +5,7 @@ from . import common
 
 def main():
     args = common.parse_args()
+    # TODO: do I need to close loop here?
     asyncio.run(_start(args.listen_at, args.proxy_to))
 
 
