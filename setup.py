@@ -8,7 +8,7 @@ setup(
     package_dir={'': 'src'},
     entry_points={
         'console_scripts': [
-            'callback_server = aio.callback_server:main',
+            'coro_server = aio.coro_server:main',
         ]
     },
     tests_require=['pytest'],
