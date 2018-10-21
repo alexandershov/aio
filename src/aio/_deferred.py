@@ -1,18 +1,25 @@
+import collections
+
 _MISSING = object()
 
 
 class Deferred:
     def __init__(self) -> None:
         self._result = _MISSING
-        self._callbacks = []
+        self._callbacks = collections.deque()
 
     def add_callback(self, callback):
         self._callbacks.append(callback)
 
     def callback(self, value):
+        assert not isinstance(value, Deferred)
         result = value
-        for callback in self._callbacks:
+        while self._callbacks:
+            callback = self._callbacks.popleft()
             result = callback(result)
+            if isinstance(result, Deferred):
+                result.add_callback(self.callback)
+                return
         self._result = result
 
     @property
