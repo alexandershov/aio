@@ -9,7 +9,7 @@ setup(
     entry_points={
         'console_scripts': [
             'coro_server = aio.coro_server:main',
-            'callbacks_server = aio.callbacks_server:main',
+            'callback_server = aio.callback_server:main',
         ]
     },
     tests_require=['pytest'],
