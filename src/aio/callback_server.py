@@ -6,7 +6,8 @@ from . import common
 
 def main():
     args = common.parse_args()
-    asyncio.run(_start(args.listen_at, args.proxy_to))
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(_start(args.listen_at, args.proxy_to, loop))
 
 
 class ClientProtocol(asyncio.Protocol):
@@ -19,14 +20,15 @@ class ClientProtocol(asyncio.Protocol):
 
 
 class ProxyServerProtocol(asyncio.Protocol):
-    def __init__(self, proxy_to: common.Address):
+    def __init__(self, proxy_to: common.Address, event):
         self._proxy_to = proxy_to
+        self._event = event
         self._proxy_transport = None
         self._buffer = collections.deque()
         self._transport = None
 
     def connection_made(self, transport):
-        print(f'Server: connection_made')
+        print('Server: connection_made')
         self._transport = transport
         _connect(self._proxy_to, self)
 
@@ -37,7 +39,12 @@ class ProxyServerProtocol(asyncio.Protocol):
             self._flush()
 
     def connection_lost(self, exc):
-        print(f'Server: connection_lost')
+        print('Server: connection_lost')
+        if self._proxy_transport is not None:
+            print('Server: closing proxy_transport')
+            self._proxy_transport.close()
+        print('Server setting event')
+        self._event.set()
 
     def connected_to_proxy(self, transport):
         self._proxy_transport = transport
@@ -54,15 +61,14 @@ class ProxyServerProtocol(asyncio.Protocol):
             self._proxy_transport.close()
 
 
-async def _start(listen_at: common.Address, proxy_to: common.Address):
-    # TODO: close sockets
-    # TODO: no awaits
-    loop = asyncio.get_running_loop()
-    server = await loop.create_server(
-        lambda: ProxyServerProtocol(proxy_to), listen_at.host, listen_at.port)
-    async with server:
-        print(f'Listening at {listen_at}')
-        await server.serve_forever()
+def _start(listen_at: common.Address, proxy_to: common.Address, loop):
+    print(f'Loop is running: {loop.is_running()}')
+    event = asyncio.Event()
+    coro = loop.create_server(
+        lambda: ProxyServerProtocol(proxy_to, event), listen_at.host, listen_at.port)
+    loop.create_task(coro)
+    print(f'Listening at {listen_at}')
+    return event.wait()
 
 
 def _connect(proxy_to: common.Address, server_protocol):
