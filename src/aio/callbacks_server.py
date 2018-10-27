@@ -9,54 +9,36 @@ def main():
 
 
 class ClientProtocol(asyncio.Protocol):
-    def __init__(self, server):
-        self._server = server
-
     def connection_made(self, transport):
-        print('Connected to client')
-        self._server.client_transport = transport
+        print(f'Client: connected to proxy {transport}')
 
 
 class ProxyServerProtocol(asyncio.Protocol):
     def __init__(self, proxy_to: common.Address):
         self._proxy_to = proxy_to
-        self.client_transport = None
-        self._chunks = []
 
     def connection_made(self, transport):
-        print('Got connection')
-        loop = asyncio.get_running_loop()
-        _connect(self, self._proxy_to)
+        print(f'Server: got connection {self}')
+        # loop = asyncio.get_running_loop()
+        # future = _connect(self._proxy_to)
+        # future.add_done_callback(lambda _: print(f'connected to proxy {future.result()[1]}'))
 
     def data_received(self, data):
-        if self.client_transport is not None:
-            self._flush_chunks()
-            self.client_transport.write(data)
-            print(f'Read chunk with length {len(data)}')
-        else:
-            self._chunks.append(data)
-
-    def _flush_chunks(self):
-        while self._chunks:
-            self.client_transport.write(self._chunks.pop())
+        print(f'Server: read data chunk: {data!r}')
 
 
 async def _start(listen_at: common.Address, proxy_to: common.Address):
+    # TODO: close sockets
     loop = asyncio.get_running_loop()
-    server_protocol = ProxyServerProtocol(proxy_to)
-    try:
-        server = await loop.create_server(
-            lambda: server_protocol, listen_at.host, listen_at.port)
-        async with server:
-            print(f'Listening at {listen_at}')
-            await server.serve_forever()
-    finally:
-        if server_protocol.client_transport is not None:
-            server_protocol.client_transport.close()
+    server = await loop.create_server(
+        lambda: ProxyServerProtocol(proxy_to), listen_at.host, listen_at.port)
+    async with server:
+        print(f'Listening at {listen_at}')
+        await server.serve_forever()
 
 
-def _connect(server_protocol, proxy_to: common.Address):
+def _connect(proxy_to: common.Address):
     loop = asyncio.get_running_loop()
-    coro = loop.create_connection(lambda: ClientProtocol(server_protocol),
+    coro = loop.create_connection(lambda: ClientProtocol(),
                                   proxy_to.host, proxy_to.port)
-    loop.create_task(coro)
+    return loop.create_task(coro)
