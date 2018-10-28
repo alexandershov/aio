@@ -10,6 +10,8 @@ class Future:
         self._result = _MISSING
 
     def result(self):
+        if self._result is _MISSING:
+            raise InvalidStateError(f'Future {self} has no result')
         return self._result
 
     def set_result(self, result):

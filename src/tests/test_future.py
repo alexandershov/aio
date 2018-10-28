@@ -14,3 +14,9 @@ def test_cant_set_result_twice():
     f.set_result(9)
     with pytest.raises(aio.future.InvalidStateError):
         f.set_result(9)
+
+
+def test_cant_get_missing_result():
+    f = aio.Future()
+    with pytest.raises(aio.future.InvalidStateError):
+        f.result()
