@@ -13,7 +13,7 @@ def test_result(future):
     assert future.result() == 9
 
 
-def test_done(future):
+def test_done_after_set_result(future):
     future.set_result(9)
     assert future.done()
 
@@ -46,3 +46,9 @@ def test_set_exception_via_class(future):
 def test_done_after_set_exception(future):
     future.set_exception(ValueError)
     assert future.done()
+
+
+def test_cant_set_exception_twice(future):
+    future.set_exception(9)
+    with pytest.raises(aio.future.InvalidStateError):
+        future.set_exception(9)

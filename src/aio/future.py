@@ -18,7 +18,7 @@ class Future:
 
     def set_result(self, result):
         if self.done():
-            raise InvalidStateError(f'Future {self} already has result {self._result}')
+            raise InvalidStateError(f'Future {self} is already done')
         self._done = True
         self._result = result
 
@@ -29,6 +29,8 @@ class Future:
         return self._exception
 
     def set_exception(self, exception):
+        if self.done():
+            raise InvalidStateError(f'Future {self} is already done')
         if isinstance(exception, type):
             self._exception = exception()
         else:
