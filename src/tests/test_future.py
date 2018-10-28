@@ -1,4 +1,5 @@
 import aio
+import aio.future
 import pytest
 
 
@@ -11,5 +12,5 @@ def test_result():
 def test_cant_set_result_twice():
     f = aio.Future()
     f.set_result(9)
-    with pytest.raises(aio.InvalidStateError):
+    with pytest.raises(aio.future.InvalidStateError):
         f.set_result(9)
