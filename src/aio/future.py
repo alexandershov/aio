@@ -25,6 +25,8 @@ class Future:
         return self._done
 
     def exception(self):
+        if not self.done():
+            raise InvalidStateError(f'Future {self} is not done')
         return self._exception
 
     def set_exception(self, exception):
