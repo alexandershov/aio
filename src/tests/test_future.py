@@ -31,3 +31,9 @@ def test_cant_get_missing_result():
     f = aio.Future()
     with pytest.raises(aio.future.InvalidStateError):
         f.result()
+
+
+def test_exception():
+    f = aio.Future()
+    f.set_exception(ValueError())
+    assert isinstance(f.exception(), ValueError)
