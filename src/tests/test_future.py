@@ -13,15 +13,13 @@ def test_result(future):
     assert future.result() == 9
 
 
-def test_done():
-    f = aio.Future()
-    f.set_result(9)
-    assert f.done()
+def test_done(future):
+    future.set_result(9)
+    assert future.done()
 
 
-def test_not_done():
-    f = aio.Future()
-    assert not f.done()
+def test_not_done(future):
+    assert not future.done()
 
 
 def test_cant_set_result_twice():
