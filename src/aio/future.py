@@ -31,8 +31,8 @@ class Future:
     def set_exception(self, exception):
         if self.done():
             raise InvalidStateError(f'Future {self} is already done')
+        self._done = True
         if isinstance(exception, type):
             self._exception = exception()
         else:
             self._exception = exception
-        self._done = True
