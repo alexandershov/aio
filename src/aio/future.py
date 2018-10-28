@@ -10,12 +10,12 @@ class Future:
         self._result = _MISSING
 
     def result(self):
-        if self._result is _MISSING:
+        if not self.done():
             raise InvalidStateError(f'Future {self} has no result')
         return self._result
 
     def set_result(self, result):
-        if self._result is not _MISSING:
+        if self.done():
             raise InvalidStateError(f'Future {self} already has result {self._result}')
         self._result = result
 
