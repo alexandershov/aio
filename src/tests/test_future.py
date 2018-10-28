@@ -41,3 +41,8 @@ def test_exception(future):
 def test_set_exception_via_class(future):
     future.set_exception(ValueError)
     assert isinstance(future.exception(), ValueError)
+
+
+def test_done_after_set_exception(future):
+    future.set_exception(ValueError)
+    assert future.done()

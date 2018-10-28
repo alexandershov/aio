@@ -9,6 +9,7 @@ class Future:
     def __init__(self):
         self._result = _MISSING
         self._exception = _MISSING
+        self._done = False
 
     def result(self):
         if not self.done():
@@ -18,10 +19,11 @@ class Future:
     def set_result(self, result):
         if self.done():
             raise InvalidStateError(f'Future {self} already has result {self._result}')
+        self._done = True
         self._result = result
 
     def done(self):
-        return self._result is not _MISSING
+        return self._done
 
     def exception(self):
         return self._exception
@@ -31,3 +33,4 @@ class Future:
             self._exception = exception()
         else:
             self._exception = exception
+        self._done = True
