@@ -27,4 +27,7 @@ class Future:
         return self._exception
 
     def set_exception(self, exception):
-        self._exception = exception
+        if isinstance(exception, type):
+            self._exception = exception()
+        else:
+            self._exception = exception

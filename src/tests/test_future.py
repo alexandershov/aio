@@ -36,3 +36,8 @@ def test_cant_get_missing_result(future):
 def test_exception(future):
     future.set_exception(ValueError())
     assert isinstance(future.exception(), ValueError)
+
+
+def test_set_exception_via_class(future):
+    future.set_exception(ValueError)
+    assert isinstance(future.exception(), ValueError)
