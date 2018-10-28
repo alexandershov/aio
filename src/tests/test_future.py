@@ -57,3 +57,9 @@ def test_cant_set_exception_twice(future):
 def test_cant_get_missing_exception(future):
     with pytest.raises(aio.future.InvalidStateError):
         future.exception()
+
+
+def test_result_after_set_exception(future):
+    future.set_exception(ValueError)
+    with pytest.raises(ValueError):
+        future.result()

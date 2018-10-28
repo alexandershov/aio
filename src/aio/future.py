@@ -13,6 +13,8 @@ class Future:
 
     def result(self):
         self._validate_done()
+        if self._exception is not _MISSING:
+            raise self._exception
         return self._result
 
     def set_result(self, result):
