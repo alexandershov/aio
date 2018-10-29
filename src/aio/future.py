@@ -19,11 +19,8 @@ class Future:
 
     def set_result(self, result):
         self._validate_not_done()
-        self._done = True
         self._result = result
-
-    def done(self):
-        return self._done
+        self._mark_as_done()
 
     def exception(self):
         self._validate_done()
@@ -31,11 +28,14 @@ class Future:
 
     def set_exception(self, exception):
         self._validate_not_done()
-        self._done = True
+        self._mark_as_done()
         if isinstance(exception, type):
             self._exception = exception()
         else:
             self._exception = exception
+
+    def done(self):
+        return self._done
 
     def _validate_not_done(self):
         if self.done():
@@ -44,3 +44,6 @@ class Future:
     def _validate_done(self):
         if not self.done():
             raise InvalidStateError(f'Future {self} is not done')
+
+    def _mark_as_done(self):
+        self._done = True
