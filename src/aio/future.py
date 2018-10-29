@@ -11,7 +11,7 @@ _MISSING = object()
 class Future:
     def __init__(self):
         self._result = _MISSING
-        self._exception = None
+        self._exception = _MISSING
         self._done = False
 
     def result(self):
@@ -23,6 +23,7 @@ class Future:
     def set_result(self, result):
         with self._transition_to_done():
             self._result = result
+            self._exception = None
 
     def exception(self):
         self._validate_done()
