@@ -49,9 +49,9 @@ def test_done_after_set_exception(future):
 
 
 def test_cant_set_exception_twice(future):
-    future.set_exception(9)
+    future.set_exception(ZeroDivisionError)
     with pytest.raises(aio.future.InvalidStateError):
-        future.set_exception(9)
+        future.set_exception(ZeroDivisionError)
 
 
 def test_cant_get_missing_exception(future):
