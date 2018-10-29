@@ -19,8 +19,8 @@ class Future:
 
     def set_result(self, result):
         self._validate_not_done()
-        self._result = result
         self._mark_as_done()
+        self._result = result
 
     def exception(self):
         self._validate_done()
