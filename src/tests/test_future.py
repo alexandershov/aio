@@ -34,17 +34,17 @@ def test_cant_get_missing_result(future):
 
 
 def test_exception(future):
-    future.set_exception(ValueError())
-    assert isinstance(future.exception(), ValueError)
+    future.set_exception(ZeroDivisionError())
+    assert isinstance(future.exception(), ZeroDivisionError)
 
 
 def test_set_exception_via_class(future):
-    future.set_exception(ValueError)
-    assert isinstance(future.exception(), ValueError)
+    future.set_exception(ZeroDivisionError)
+    assert isinstance(future.exception(), ZeroDivisionError)
 
 
 def test_done_after_set_exception(future):
-    future.set_exception(ValueError)
+    future.set_exception(ZeroDivisionError)
     assert future.done()
 
 
@@ -60,8 +60,8 @@ def test_cant_get_missing_exception(future):
 
 
 def test_result_after_set_exception(future):
-    future.set_exception(ValueError)
-    with pytest.raises(ValueError):
+    future.set_exception(ZeroDivisionError)
+    with pytest.raises(ZeroDivisionError):
         future.result()
 
 
