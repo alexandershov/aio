@@ -8,12 +8,12 @@ _MISSING = object()
 class Future:
     def __init__(self):
         self._result = _MISSING
-        self._exception = _MISSING
+        self._exception = None
         self._done = False
 
     def result(self):
         self._validate_done()
-        if self._exception is not _MISSING:
+        if self._result is _MISSING:
             raise self._exception
         return self._result
 

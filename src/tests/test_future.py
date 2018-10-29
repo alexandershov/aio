@@ -63,3 +63,8 @@ def test_result_after_set_exception(future):
     future.set_exception(ValueError)
     with pytest.raises(ValueError):
         future.result()
+
+
+def test_exception_is_none_after_set_exception(future):
+    future.set_result(9)
+    assert future.exception() is None
