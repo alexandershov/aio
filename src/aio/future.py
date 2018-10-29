@@ -1,3 +1,6 @@
+import contextlib
+
+
 class InvalidStateError(Exception):
     pass
 
@@ -18,9 +21,8 @@ class Future:
         return self._result
 
     def set_result(self, result):
-        self._validate_not_done()
-        self._mark_as_done()
-        self._result = result
+        with self._transition_to_done():
+            self._result = result
 
     def exception(self):
         self._validate_done()
@@ -56,3 +58,9 @@ class Future:
         if isinstance(exception, type) and issubclass(exception, Exception):
             return
         raise TypeError
+
+    @contextlib.contextmanager
+    def _transition_to_done(self):
+        self._validate_not_done()
+        yield
+        self._mark_as_done()
