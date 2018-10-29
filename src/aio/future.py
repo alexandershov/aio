@@ -30,12 +30,11 @@ class Future:
 
     def set_exception(self, exception):
         Future._validate_exception(exception)
-        self._validate_not_done()
-        self._mark_as_done()
-        if isinstance(exception, type):
-            self._exception = exception()
-        else:
-            self._exception = exception
+        with self._transition_to_done():
+            if isinstance(exception, type):
+                self._exception = exception()
+            else:
+                self._exception = exception
 
     def done(self):
         return self._done
