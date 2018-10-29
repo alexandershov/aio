@@ -68,3 +68,11 @@ def test_result_after_set_exception(future):
 def test_exception_is_none_after_set_exception(future):
     future.set_result(9)
     assert future.exception() is None
+
+
+@pytest.mark.parametrize('exception', [
+    9,
+])
+def test_invalid_exception_in_set_exception(future, exception):
+    with pytest.raises(TypeError):
+        future.set_exception(exception)

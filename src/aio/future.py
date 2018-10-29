@@ -27,6 +27,7 @@ class Future:
         return self._exception
 
     def set_exception(self, exception):
+        Future._validate_exception(exception)
         self._validate_not_done()
         self._mark_as_done()
         if isinstance(exception, type):
@@ -47,3 +48,11 @@ class Future:
 
     def _mark_as_done(self):
         self._done = True
+
+    @staticmethod
+    def _validate_exception(exception):
+        if isinstance(exception, Exception):
+            return
+        if isinstance(exception, type) and issubclass(exception, Exception):
+            return
+        raise TypeError
