@@ -77,3 +77,4 @@ def test_exception_is_none_after_set_exception(future):
 def test_invalid_exception_in_set_exception(future, exception):
     with pytest.raises(TypeError):
         future.set_exception(exception)
+    assert not future.done()
