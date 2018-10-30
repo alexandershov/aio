@@ -72,6 +72,7 @@ def test_exception_is_none_after_set_exception(future):
 
 @pytest.mark.parametrize('exception', [
     9,
+    int,
 ])
 def test_invalid_exception_in_set_exception(future, exception):
     with pytest.raises(TypeError):
