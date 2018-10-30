@@ -1,4 +1,5 @@
 import collections
+import time
 
 
 class Loop:
@@ -17,9 +18,12 @@ class Loop:
 
     def run_forever(self) -> None:
         self._running = True
-        while self._callbacks:
-            callback = self._callbacks.popleft()
-            callback()
+        while self._running:
+            if not self._callbacks:
+                time.sleep(1)
+            else:
+                callback = self._callbacks.popleft()
+                callback()
 
 
 def get_event_loop() -> Loop:
