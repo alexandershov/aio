@@ -9,8 +9,11 @@ def loop_fixture(request):
     return aio.get_event_loop()
 
 
-def test_call_soon(loop):
+def test_is_running(loop):
     assert not loop.is_running()
+
+
+def test_call_soon(loop):
     loop.call_soon(_Stopper(loop))
     loop.run_forever()
     assert not loop.is_running()
