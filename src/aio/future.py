@@ -30,12 +30,13 @@ class Future:
         return self._exception
 
     def set_exception(self, exception):
-        Future._validate_exception(exception)
         with self._transition_to_done():
-            if isinstance(exception, type):
+            if isinstance(exception, Exception):
+                self._exception = exception
+            elif isinstance(exception, type) and issubclass(exception, Exception):
                 self._exception = exception()
             else:
-                self._exception = exception
+                raise TypeError(f'{exception!r} is not an exception')
 
     def done(self):
         return self._done
