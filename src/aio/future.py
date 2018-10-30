@@ -52,19 +52,6 @@ class Future:
     def _mark_as_done(self):
         self._done = True
 
-    @staticmethod
-    def _validate_exception(value):
-        if not Future._is_exception(value):
-            raise TypeError
-
-    @staticmethod
-    def _is_exception(value):
-        if isinstance(value, Exception):
-            return True
-        if isinstance(value, type) and issubclass(value, Exception):
-            return True
-        return False
-
     @contextlib.contextmanager
     def _transition_to_done(self):
         self._validate_not_done()
