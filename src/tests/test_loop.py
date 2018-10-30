@@ -1,10 +1,15 @@
 import aio
 
 import aio.loop
+import pytest
 
 
-def test_call_soon():
-    loop = aio.get_event_loop()
+@pytest.fixture(name='loop')
+def loop_fixture(request):
+    return aio.get_event_loop()
+
+
+def test_call_soon(loop):
     assert not loop.is_running()
     loop.call_soon(_Stopper(loop))
     loop.run_forever()
