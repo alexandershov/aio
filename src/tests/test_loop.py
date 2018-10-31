@@ -28,6 +28,12 @@ def test_call_later(loop):
     assert calls == [1, 2]
 
 
+def test_call_at(loop):
+    now = loop.time()
+    loop.call_at(now + 0.001, _Stopper(loop))
+    loop.run_forever()
+
+
 class _Stopper:
     def __init__(self, loop: aio.loop.Loop):
         self._loop = loop
