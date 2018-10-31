@@ -29,9 +29,13 @@ def test_call_later(loop):
 
 
 def test_call_at(loop):
+    calls = []
     now = loop.time()
-    loop.call_at(now + 0.001, _Stopper(loop))
+    loop.call_at(now + 0.002, lambda: calls.append(2))
+    loop.call_at(now + 0.001, lambda: calls.append(1))
+    loop.call_at(now + 0.003, _Stopper(loop))
     loop.run_forever()
+    assert calls == [1, 2]
 
 
 class _Stopper:
