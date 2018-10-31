@@ -9,12 +9,12 @@ class Loop:
         self._running = False
         self._callbacks = []
 
-    def call_soon(self, callback):
-        return self.call_later(0, callback)
+    def call_soon(self, fn):
+        return self.call_later(0, fn)
 
-    def call_later(self, delay, callback):
+    def call_later(self, delay, fn):
         eta = time.monotonic() + delay
-        heapq.heappush(self._callbacks, _ScheduledCallback(eta, callback))
+        heapq.heappush(self._callbacks, _ScheduledCallback(eta, fn))
 
     def stop(self) -> None:
         self._running = False
@@ -40,10 +40,10 @@ class Loop:
 @dataclass(frozen=True, order=True)
 class _ScheduledCallback:
     eta: float
-    function: tp.Callable = field(compare=False)
+    fn: tp.Callable = field(compare=False)
 
     def __call__(self):
-        return self.function()
+        return self.fn()
 
 
 def get_event_loop() -> Loop:
