@@ -21,11 +21,11 @@ def test_call_soon(loop):
 
 def test_call_later(loop):
     calls = []
-    loop.call_later(0.002, lambda: calls.append(2))
-    loop.call_later(0.001, lambda: calls.append(1))
+    loop.call_later(0.002, lambda: calls.append('second'))
+    loop.call_later(0.001, lambda: calls.append('first'))
     loop.call_later(0.003, _Stopper(loop))
     loop.run_forever()
-    assert calls == [1, 2]
+    assert calls == ['first', 'second']
 
 
 def test_call_at(loop):
