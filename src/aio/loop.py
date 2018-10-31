@@ -52,5 +52,8 @@ class _ScheduledCallback:
         return self.fn()
 
 
+_loop = Loop()
+
+
 def get_event_loop() -> Loop:
-    return Loop()
+    return _loop

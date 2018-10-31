@@ -9,6 +9,10 @@ def loop_fixture(request):
     return aio.get_event_loop()
 
 
+def test_get_event_loop():
+    assert aio.get_event_loop() is aio.get_event_loop()
+
+
 def test_is_running(loop):
     assert not loop.is_running()
 
