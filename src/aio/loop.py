@@ -34,13 +34,16 @@ class Loop:
                     time.sleep(callback.eta - now)
                 else:
                     callback = heapq.heappop(self._callbacks)
-                    callback.callback()
+                    callback()
 
 
 @dataclass(frozen=True, order=True)
 class _ScheduledCallback:
     eta: float
-    callback: tp.Callable = field(compare=False)
+    function: tp.Callable = field(compare=False)
+
+    def __call__(self):
+        return self.function()
 
 
 def get_event_loop() -> Loop:
