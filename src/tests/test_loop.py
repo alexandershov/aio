@@ -19,7 +19,7 @@ def test_call_soon(loop):
     assert not loop.is_running()
 
 
-def test_call_at(loop):
+def test_call_later(loop):
     calls = []
     loop.call_later(0.002, lambda: calls.append(2))
     loop.call_later(0.001, lambda: calls.append(1))
