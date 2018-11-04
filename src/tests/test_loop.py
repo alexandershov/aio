@@ -74,7 +74,9 @@ def test_call_later_with_arguments(loop):
 def test_call_at_with_arguments(loop):
     calls = []
     now = loop.time()
-    loop.call_at(now + 0.0001, lambda arg: arg.append('first'), calls)
+    loop.call_at(now + 0.0001,
+                 lambda seq, item: seq.append(item),
+                 calls, 'first')
     loop.call_at(now + 0.0001, _Stopper(loop))
     loop.run_forever()
     assert calls == ['first']
