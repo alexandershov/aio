@@ -83,6 +83,13 @@ def test_add_done_callback(future, loop):
     assert results == [9]
 
 
+def test_run_until_complete(future, loop):
+    loop.call_soon(lambda: future.set_result(9))
+    # TODO: run_until_complete result
+    loop.run_until_complete(future)
+    assert future.result() == 9
+
+
 class _Stopper:
     def __init__(self, loop: aio.Loop):
         self._loop = loop

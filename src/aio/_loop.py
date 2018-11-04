@@ -45,6 +45,12 @@ class Loop:
                     callback = heapq.heappop(self._callbacks)
                     callback()
 
+    def run_until_complete(self, future):
+        future.add_done_callback(lambda _: self.stop())
+        self.run_forever()
+        # TODO: what if loop was stopped before future completed?
+        return future.result()
+
 
 @dataclass(frozen=True, order=True)
 class _ScheduledCallback:
