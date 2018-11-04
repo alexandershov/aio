@@ -8,6 +8,7 @@ class Loop:
     def __init__(self):
         self._running = False
         self._callbacks = []
+        self._callbacks_count = 0
 
     def call_soon(self, fn):
         return self.call_later(0, fn)
@@ -17,7 +18,9 @@ class Loop:
         return self.call_at(eta, fn)
 
     def call_at(self, eta, fn):
-        heapq.heappush(self._callbacks, _ScheduledCallback(eta, fn))
+        i = self._callbacks_count
+        self._callbacks_count += 1
+        heapq.heappush(self._callbacks, _ScheduledCallback(eta, i, fn))
 
     def time(self) -> float:
         return time.monotonic()
@@ -46,6 +49,7 @@ class Loop:
 @dataclass(frozen=True, order=True)
 class _ScheduledCallback:
     eta: float
+    index: int
     fn: tp.Callable = field(compare=False)
 
     def __call__(self):
