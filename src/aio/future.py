@@ -45,10 +45,12 @@ class Future:
     def done(self):
         return self._done
 
+    # TODO: should I trigger callback chain on set_exception()?
     def add_done_callback(self, callback):
         self._callbacks.append(callback)
 
     def _schedule_callbacks(self):
+        # TODO: should I clear _callbacks here?
         loop = _loop.get_event_loop()
         for callback in self._callbacks:
             loop.call_soon(callback, self)
