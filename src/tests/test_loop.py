@@ -68,6 +68,15 @@ def test_call_later_with_arguments(loop):
     assert calls == ['first']
 
 
+def test_call_at_with_arguments(loop):
+    calls = []
+    now = loop.time()
+    loop.call_at(now + 0.0001, lambda arg: arg.append('first'), calls)
+    loop.call_at(now + 0.0001, _Stopper(loop))
+    loop.run_forever()
+    assert calls == ['first']
+
+
 class _Stopper:
     def __init__(self, loop: aio.loop.Loop):
         self._loop = loop
