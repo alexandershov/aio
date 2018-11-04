@@ -3,11 +3,6 @@ import aio.future
 import pytest
 
 
-@pytest.fixture(name='future')
-def future_fixture(request):
-    return aio.Future()
-
-
 def test_result(future):
     future.set_result(9)
     assert future.result() == 9
