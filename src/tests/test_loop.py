@@ -89,6 +89,18 @@ def test_run_until_complete(future, loop):
     assert future.result() == 9
 
 
+async def slow_add(x, y):
+    await sleep(0.0001)
+    return x + y
+
+
+async def sleep(duration):
+    future = aio.Future()
+    loop = aio.get_event_loop()
+    loop.call_later(duration, future.set_result, None)
+    await future
+
+
 class _Stopper:
     def __init__(self, loop: aio.Loop):
         self._loop = loop
