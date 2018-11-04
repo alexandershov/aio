@@ -42,6 +42,16 @@ def test_call_at(loop):
     assert calls == ['first', 'second']
 
 
+def test_callback_ordering(loop):
+    calls = []
+    now = loop.time()
+    loop.call_at(now + 0.0002, lambda: calls.append('second'))
+    loop.call_at(now + 0.0002, _Stopper(loop))
+    loop.call_at(now + 0.0001, lambda: calls.append('first'))
+    loop.run_forever()
+    assert calls == ['first', 'second']
+
+
 class _Stopper:
     def __init__(self, loop: aio.loop.Loop):
         self._loop = loop
