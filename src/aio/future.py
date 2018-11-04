@@ -1,5 +1,7 @@
 import contextlib
 
+from . import _loop
+
 
 class InvalidStateError(Exception):
     pass
@@ -13,6 +15,7 @@ class Future:
         self._result = _MISSING
         self._exception = _MISSING
         self._done = False
+        self._callbacks = []
 
     def result(self):
         self._validate_done()
@@ -24,6 +27,7 @@ class Future:
         with self._transition_to_done():
             self._result = result
             self._exception = None
+        self._schedule_callbacks()
 
     def exception(self):
         self._validate_done()
@@ -40,6 +44,14 @@ class Future:
 
     def done(self):
         return self._done
+
+    def add_done_callback(self, callback):
+        self._callbacks.append(callback)
+
+    def _schedule_callbacks(self):
+        loop = _loop.get_event_loop()
+        for callback in self._callbacks:
+            loop.call_soon(callback, self)
 
     def _validate_not_done(self):
         if self.done():

@@ -74,6 +74,15 @@ def test_call_at_with_arguments(loop):
     assert calls == ['first']
 
 
+def test_add_done_callback(future, loop):
+    results = []
+    future.add_done_callback(lambda f: results.append(f.result()))
+    future.add_done_callback(lambda f: loop.stop())
+    loop.call_soon(lambda: future.set_result(9))
+    loop.run_forever()
+    assert results == [9]
+
+
 class _Stopper:
     def __init__(self, loop: aio.Loop):
         self._loop = loop
