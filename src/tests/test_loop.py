@@ -1,6 +1,5 @@
 import aio
 
-import aio.loop
 import pytest
 
 
@@ -83,7 +82,7 @@ def test_call_at_with_arguments(loop):
 
 
 class _Stopper:
-    def __init__(self, loop: aio.loop.Loop):
+    def __init__(self, loop: aio.Loop):
         self._loop = loop
 
     def __call__(self):
