@@ -52,6 +52,14 @@ def test_callback_ordering(loop):
     assert calls == ['first', 'second']
 
 
+def test_call_soon_with_arguments(loop):
+    calls = []
+    loop.call_soon(lambda arg: arg.append('first'), calls)
+    loop.call_soon(_Stopper(loop))
+    loop.run_forever()
+    assert calls == ['first']
+
+
 class _Stopper:
     def __init__(self, loop: aio.loop.Loop):
         self._loop = loop
