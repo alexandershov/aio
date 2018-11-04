@@ -85,8 +85,7 @@ def test_add_done_callback(future, loop):
 
 def test_run_until_complete(future, loop):
     loop.call_soon(lambda: future.set_result(9))
-    # TODO: run_until_complete result
-    loop.run_until_complete(future)
+    assert loop.run_until_complete(future) == 9
     assert future.result() == 9
 
 
