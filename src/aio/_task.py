@@ -12,13 +12,13 @@ class Task(aio.Future):
 
     def _step(self):
         try:
-            item = self._coro.send(None)
+            future = self._coro.send(None)
         except StopIteration as exc:
             self.set_result(exc.value)
         else:
-            if inspect.iscoroutine(item):
-                item = Task(item)
-            if isinstance(item, aio.Future):
-                item.add_done_callback(lambda _: self._step())
+            if inspect.iscoroutine(future):
+                future = Task(future)
+            if isinstance(future, aio.Future):
+                future.add_done_callback(lambda _: self._step())
             else:
-                raise RuntimeError(f'{item!r} is not a future or coroutine')
+                raise RuntimeError(f'{future!r} is not a future or coroutine')
