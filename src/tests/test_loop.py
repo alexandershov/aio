@@ -97,6 +97,21 @@ def test_nested_coroutine(loop):
     assert loop.run_until_complete(coro_add(1, 2)) == 3
 
 
+def test_coroutine_failed_future(future, loop):
+    loop.call_soon(future.set_exception, ZeroDivisionError)
+    result = loop.run_until_complete(wait(future))
+    assert isinstance(result, ZeroDivisionError)
+
+
+async def wait(future):
+    try:
+        await future
+    except Exception as exc:
+        return exc
+    else:
+        return None
+
+
 async def coro_add(x, y):
     await sleep(0.0001)
     return x + y
