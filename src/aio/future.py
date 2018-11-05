@@ -15,6 +15,7 @@ class Future:
         self._result = _MISSING
         self._exception = _MISSING
         self._done = False
+        # TODO: use deque
         self._callbacks = []
 
     def result(self):
@@ -41,23 +42,23 @@ class Future:
                 self._exception = exception()
             else:
                 raise TypeError(f'{exception!r} is not an exception')
-        _loop.get_event_loop().call_soon(self._schedule_callbacks)
+        self._schedule_callbacks()
 
     def done(self):
         return self._done
 
-    # TODO: what should I do if this future is already done?
     def add_done_callback(self, callback):
         self._callbacks.append(callback)
+        if self.done():
+            self._schedule_callbacks()
 
     def __await__(self):
         yield self
 
     def _schedule_callbacks(self):
-        # TODO: should I clear _callbacks here?
         loop = _loop.get_event_loop()
-        for callback in self._callbacks:
-            loop.call_soon(callback, self)
+        while self._callbacks:
+            loop.call_soon(self._callbacks.pop(0), self)
 
     def _validate_not_done(self):
         if self.done():
