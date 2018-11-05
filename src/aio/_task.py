@@ -8,9 +8,9 @@ class Task(aio.Future):
         super().__init__()
         self._coro = coro
         loop = aio.get_event_loop()
-        loop.call_soon(self._run)
+        loop.call_soon(self._step)
 
-    def _run(self):
+    def _step(self):
         try:
             item = self._coro.send(None)
         except StopIteration as exc:
@@ -19,6 +19,6 @@ class Task(aio.Future):
             if inspect.iscoroutine(item):
                 item = Task(item)
             if isinstance(item, aio.Future):
-                item.add_done_callback(lambda _: self._run())
+                item.add_done_callback(lambda _: self._step())
             else:
                 raise RuntimeError(f'{item!r} is not a future or coroutine')
