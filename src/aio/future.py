@@ -41,6 +41,7 @@ class Future:
                 self._exception = exception()
             else:
                 raise TypeError(f'{exception!r} is not an exception')
+        self._schedule_callbacks()
 
     def done(self):
         return self._done
