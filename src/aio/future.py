@@ -1,3 +1,4 @@
+import collections
 import contextlib
 
 from . import _loop
@@ -15,8 +16,7 @@ class Future:
         self._result = _MISSING
         self._exception = _MISSING
         self._done = False
-        # TODO: use deque
-        self._callbacks = []
+        self._callbacks = collections.deque()
 
     def result(self):
         self._validate_done()
@@ -58,7 +58,7 @@ class Future:
     def _schedule_callbacks(self):
         loop = _loop.get_event_loop()
         while self._callbacks:
-            loop.call_soon(self._callbacks.pop(0), self)
+            loop.call_soon(self._callbacks.popleft(), self)
 
     def _validate_not_done(self):
         if self.done():
