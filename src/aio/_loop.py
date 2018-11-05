@@ -53,7 +53,8 @@ class Loop:
             future = aio.Task(future)
         future.add_done_callback(lambda _: self.stop())
         self.run_forever()
-        # TODO: what if loop was stopped before future completed?
+        if not future.done():
+            raise RuntimeError(f'Loop stopped before {future} completed')
         return future.result()
 
 

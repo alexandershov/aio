@@ -1,4 +1,5 @@
 import aio
+import pytest
 
 
 def test_get_event_loop():
@@ -87,6 +88,12 @@ def test_run_until_complete(future, loop):
     loop.call_soon(lambda: future.set_result(9))
     assert loop.run_until_complete(future) == 9
     assert future.result() == 9
+
+
+def test_run_until_complete_with_forever_pending_future(future, loop):
+    loop.call_soon(loop.stop)
+    with pytest.raises(RuntimeError):
+        loop.run_until_complete(future)
 
 
 def test_coroutine(loop):
