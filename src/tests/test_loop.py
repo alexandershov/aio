@@ -105,7 +105,8 @@ def test_coroutine_with_failed_future(future, loop):
 
 def test_coroutine_with_done_future(future, loop):
     loop.call_soon(future.set_result, 9)
-    assert loop.run_until_complete(wait(future)) == 9
+    result = loop.run_until_complete(wait(future))
+    assert result == 9
 
 
 async def wait(future):
