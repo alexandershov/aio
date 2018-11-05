@@ -54,6 +54,7 @@ class Future:
 
     def __await__(self):
         yield self
+        return self.result()
 
     def _schedule_callbacks(self):
         loop = _loop.get_event_loop()

@@ -8,25 +8,17 @@ class Task(aio.Future):
         super().__init__()
         self._coro = coro
         loop = aio.get_event_loop()
-        loop.call_soon(self._run, None)
+        loop.call_soon(self._run)
 
-    def _run(self, fut_or_value):
-        if isinstance(fut_or_value, aio.Future):
-            if fut_or_value.exception() is None:
-                action = lambda: self._coro.send(fut_or_value.result())
-            else:
-                action = lambda: self._coro.throw(fut_or_value.exception())
-        else:
-            action = lambda: self._coro.send(fut_or_value)
+    def _run(self):
         try:
-            item = action()
+            item = self._coro.send(None)
         except StopIteration as exc:
             self.set_result(exc.value)
         else:
             if inspect.iscoroutine(item):
                 item = Task(item)
             if isinstance(item, aio.Future):
-                item.add_done_callback(lambda _: self._run(item))
+                item.add_done_callback(lambda _: self._run())
             else:
-                # TODO: get rid of infinite recursion
-                self._run(item)
+                raise RuntimeError(f'{item!r} is not a future or coroutine')
