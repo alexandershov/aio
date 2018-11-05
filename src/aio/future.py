@@ -49,6 +49,9 @@ class Future:
     def add_done_callback(self, callback):
         self._callbacks.append(callback)
 
+    def __await__(self):
+        yield self
+
     def _schedule_callbacks(self):
         # TODO: should I clear _callbacks here?
         loop = _loop.get_event_loop()

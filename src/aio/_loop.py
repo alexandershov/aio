@@ -1,7 +1,10 @@
 import heapq
+import inspect
 import time
 import typing as tp
 from dataclasses import dataclass, field
+
+import aio
 
 
 class Loop:
@@ -46,6 +49,8 @@ class Loop:
                     callback()
 
     def run_until_complete(self, future):
+        if inspect.iscoroutine(future):
+            future = aio.Task(future)
         future.add_done_callback(lambda _: self.stop())
         self.run_forever()
         # TODO: what if loop was stopped before future completed?

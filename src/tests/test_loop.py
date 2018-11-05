@@ -89,6 +89,10 @@ def test_run_until_complete(future, loop):
     assert future.result() == 9
 
 
+def test_coroutine(loop):
+    assert loop.run_until_complete(sleep(0.0001)) is None
+
+
 async def slow_add(x, y):
     await sleep(0.0001)
     return x + y
