@@ -99,8 +99,8 @@ def test_nested_coroutine(loop):
 
 def test_coroutine_failed_future(future, loop):
     loop.call_soon(future.set_exception, ZeroDivisionError)
-    result = loop.run_until_complete(wait(future))
-    assert isinstance(result, ZeroDivisionError)
+    exc = loop.run_until_complete(wait(future))
+    assert isinstance(exc, ZeroDivisionError)
 
 
 async def wait(future):
