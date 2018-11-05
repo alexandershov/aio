@@ -93,7 +93,11 @@ def test_coroutine(loop):
     assert loop.run_until_complete(sleep(0.0001)) is None
 
 
-async def slow_add(x, y):
+def test_nested_coroutine(loop):
+    assert loop.run_until_complete(coro_add(1, 2)) == 3
+
+
+async def coro_add(x, y):
     await sleep(0.0001)
     return x + y
 

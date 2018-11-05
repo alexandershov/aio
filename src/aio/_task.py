@@ -1,3 +1,5 @@
+import inspect
+
 import aio
 
 
@@ -14,6 +16,8 @@ class Task(aio.Future):
         except StopIteration as exc:
             self.set_result(exc.value)
         else:
+            if inspect.iscoroutine(item):
+                item = Task(item)
             if isinstance(item, aio.Future):
                 item.add_done_callback(lambda _: self._run(item.result()))
             else:
