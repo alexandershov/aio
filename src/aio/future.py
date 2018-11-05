@@ -47,6 +47,7 @@ class Future:
         return self._done
 
     # TODO: should I trigger callback chain on set_exception()?
+    # TODO: what should I do if this future is already done?
     def add_done_callback(self, callback):
         self._callbacks.append(callback)
 
