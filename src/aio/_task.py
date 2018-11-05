@@ -16,9 +16,6 @@ class Task(aio.Future):
         except StopIteration as exc:
             self.set_result(exc.value)
         else:
-            if inspect.iscoroutine(future):
-                future = Task(future)
-            if isinstance(future, aio.Future):
-                future.add_done_callback(lambda _: self._step())
-            else:
+            if not isinstance(future, aio.Future):
                 raise RuntimeError(f'{future!r} is not a future or coroutine')
+            future.add_done_callback(lambda _: self._step())
