@@ -17,11 +17,11 @@ class Loop:
         return self.call_later(0, callback, *args)
 
     def call_later(self, delay, callback, *args):
-        eta = time.monotonic() + delay
-        return self.call_at(eta, callback, *args)
+        when = time.monotonic() + delay
+        return self.call_at(when, callback, *args)
 
-    def call_at(self, eta, callback, *args):
-        heapq.heappush(self._callbacks, _ScheduledCallback(eta, self._callbacks_counter, callback, args))
+    def call_at(self, when, callback, *args):
+        heapq.heappush(self._callbacks, _ScheduledCallback(when, self._callbacks_counter, callback, args))
         self._callbacks_counter += 1
 
     def time(self) -> float:
@@ -41,8 +41,8 @@ class Loop:
             else:
                 callback = self._callbacks[0]
                 now = self.time()
-                if callback.eta > now:
-                    time.sleep(callback.eta - now)
+                if callback.when > now:
+                    time.sleep(callback.when - now)
                 else:
                     callback = heapq.heappop(self._callbacks)
                     callback()
@@ -59,7 +59,7 @@ class Loop:
 
 @dataclass(frozen=True, order=True)
 class _ScheduledCallback:
-    eta: float
+    when: float
     index: int
 
     fn: tp.Callable = field(compare=False)
