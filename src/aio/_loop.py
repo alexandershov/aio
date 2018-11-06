@@ -13,17 +13,17 @@ class Loop:
         self._callbacks = []
         self._callbacks_count = 0
 
-    def call_soon(self, fn, *args):
-        return self.call_later(0, fn, *args)
+    def call_soon(self, callback, *args):
+        return self.call_later(0, callback, *args)
 
-    def call_later(self, delay, fn, *args):
+    def call_later(self, delay, callback, *args):
         eta = time.monotonic() + delay
-        return self.call_at(eta, fn, *args)
+        return self.call_at(eta, callback, *args)
 
-    def call_at(self, eta, fn, *args):
+    def call_at(self, eta, callback, *args):
         i = self._callbacks_count
         self._callbacks_count += 1
-        heapq.heappush(self._callbacks, _ScheduledCallback(eta, i, fn, args))
+        heapq.heappush(self._callbacks, _ScheduledCallback(eta, i, callback, args))
 
     def time(self) -> float:
         return time.monotonic()
