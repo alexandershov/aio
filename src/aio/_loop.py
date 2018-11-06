@@ -11,7 +11,7 @@ class Loop:
     def __init__(self):
         self._running = False
         self._callbacks = []
-        self._num_callbacks = 0
+        self._callbacks_counter = 0
 
     def call_soon(self, callback, *args):
         return self.call_later(0, callback, *args)
@@ -21,8 +21,8 @@ class Loop:
         return self.call_at(eta, callback, *args)
 
     def call_at(self, eta, callback, *args):
-        i = self._num_callbacks
-        self._num_callbacks += 1
+        i = self._callbacks_counter
+        self._callbacks_counter += 1
         heapq.heappush(self._callbacks, _ScheduledCallback(eta, i, callback, args))
 
     def time(self) -> float:
