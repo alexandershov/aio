@@ -21,9 +21,8 @@ class Loop:
         return self.call_at(eta, callback, *args)
 
     def call_at(self, eta, callback, *args):
-        i = self._callbacks_counter
+        heapq.heappush(self._callbacks, _ScheduledCallback(eta, self._callbacks_counter, callback, args))
         self._callbacks_counter += 1
-        heapq.heappush(self._callbacks, _ScheduledCallback(eta, i, callback, args))
 
     def time(self) -> float:
         return time.monotonic()
