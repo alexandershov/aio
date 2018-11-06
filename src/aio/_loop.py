@@ -17,7 +17,7 @@ class Loop:
         return self.call_later(0, callback, *args)
 
     def call_later(self, delay, callback, *args):
-        when = time.monotonic() + delay
+        when = self.time() + delay
         return self.call_at(when, callback, *args)
 
     def call_at(self, when, callback, *args):
