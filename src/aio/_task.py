@@ -12,6 +12,7 @@ class Task(aio.Future):
         try:
             future = self._coro.send(None)
         except StopIteration as exc:
+            # TODO: do I need to call `set_result()`?
             self.set_result(exc.value)
         else:
             if not isinstance(future, aio.Future):
