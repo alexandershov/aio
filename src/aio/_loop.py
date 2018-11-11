@@ -21,12 +21,12 @@ class Loop:
         return self.call_at(when, callback, *args)
 
     def call_at(self, when, callback, *args):
-        scheduled_callback = _ScheduledCallback(
+        item = _ScheduleItem(
             when=when,
             index=self._callbacks_counter,
-            fn=callback,
+            callback=callback,
             args=args)
-        heapq.heappush(self._schedule, scheduled_callback)
+        heapq.heappush(self._schedule, item)
         self._callbacks_counter += 1
 
     def time(self) -> float:
@@ -63,15 +63,15 @@ class Loop:
 
 
 @dataclass(frozen=True, order=True)
-class _ScheduledCallback:
+class _ScheduleItem:
     when: float
     index: int
 
-    fn: tp.Callable = field(compare=False)
+    callback: tp.Callable = field(compare=False)
     args: tp.Tuple = field(compare=False)
 
     def __call__(self):
-        return self.fn(*self.args)
+        return self.callback(*self.args)
 
 
 _loop = Loop()
