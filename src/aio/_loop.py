@@ -52,6 +52,7 @@ class Loop:
         return self._running
 
     def run_forever(self) -> None:
+        logger.info('Running loop %s forever', self)
         self._running = True
         while self._running:
             if not self._schedule:
