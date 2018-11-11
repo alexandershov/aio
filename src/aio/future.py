@@ -76,6 +76,10 @@ class Future:
         self._mark_as_done()
         self._schedule_callbacks()
 
+    def __str__(self):
+        status = 'done' if self._done else 'pending'
+        return f'<Future {status}>'
+
 
 def _build_exception_instance(exception) -> Exception:
     if isinstance(exception, Exception):
