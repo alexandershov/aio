@@ -45,7 +45,6 @@ class BaseFuture(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
 
-# TODO: add BaseFuture interface, so Future & Task will inherit from it
 class Future(BaseFuture):
     def __init__(self):
         self._result = _MISSING
