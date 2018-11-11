@@ -11,9 +11,10 @@ class Task(aio.Future):
         self._coro = coro
         loop = aio.get_event_loop()
         loop.call_soon(self._run)
-        logger.info('Created Task wrapping coroutine %s', self._coro)
+        logger.debug('Created Task wrapping coroutine %s', self._coro)
 
     def _run(self):
+        logger.debug('Running %s', self)
         try:
             future = self._coro.send(None)
         except StopIteration as exc:
