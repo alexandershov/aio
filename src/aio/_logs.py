@@ -1,7 +1,7 @@
 import logging
 
 
-def _setup_logging():
+def _configure_logging():
     logger = logging.getLogger('aio')
     logger.setLevel(logging.DEBUG)
     handler = logging.StreamHandler()
@@ -11,4 +11,4 @@ def _setup_logging():
 
 
 # TODO: maybe it should be called when event loop is running?
-_setup_logging()
+_configure_logging()
