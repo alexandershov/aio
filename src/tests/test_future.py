@@ -13,7 +13,7 @@ def test_done_after_set_result(future):
     assert future.done()
 
 
-def test_not_done(future):
+def test_fresh_future_not_done(future):
     assert not future.done()
 
 
