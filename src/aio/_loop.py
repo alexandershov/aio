@@ -1,5 +1,4 @@
 import heapq
-import inspect
 import time
 import typing as tp
 from dataclasses import dataclass, field
@@ -58,8 +57,7 @@ class Loop:
                 self._run_next_item_or_wait()
 
     def run_until_complete(self, future):
-        if inspect.iscoroutine(future):
-            future = aio.Task(future)
+        future = aio.ensure_future(future)
         future.add_done_callback(lambda _: self.stop())
 
         self.run_forever()

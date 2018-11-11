@@ -1,8 +1,15 @@
+import inspect
 import logging
 
 import aio
 
 logger = logging.getLogger(__name__)  # TODO: what's the best practice to create logger?
+
+
+def ensure_future(fut_or_coro):
+    if inspect.iscoroutine(fut_or_coro):
+        return Task(fut_or_coro)
+    return fut_or_coro
 
 
 class Task(aio.Future):
