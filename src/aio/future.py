@@ -43,7 +43,7 @@ class Future:
         return self._exception
 
     def set_exception(self, exception) -> None:
-        logger.debug('Setting result of %s to %r', self, exception)
+        logger.debug('Setting exception of %s to %r', self, exception)
         with self._transition_to_done():
             self._exception = _build_exception_instance(exception)
 
