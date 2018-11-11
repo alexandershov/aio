@@ -87,6 +87,10 @@ class Future:
         state = self._get_done_state() if self.done() else 'pending'
         return f'<Future {state}>'
 
+    def __repr__(self) -> str:
+        # TODO: should it be different from str?
+        return str(self)
+
     def _has_failed(self) -> bool:
         assert self._done
         return self._result is _MISSING
