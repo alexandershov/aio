@@ -10,7 +10,7 @@ import aio
 class Loop:
     def __init__(self):
         self._running = False
-        self._callbacks = []
+        self._schedule = []
         self._callbacks_counter = 0
 
     def call_soon(self, callback, *args):
@@ -21,7 +21,12 @@ class Loop:
         return self.call_at(when, callback, *args)
 
     def call_at(self, when, callback, *args):
-        heapq.heappush(self._callbacks, _ScheduledCallback(when, self._callbacks_counter, callback, args))
+        scheduled_callback = _ScheduledCallback(
+            when=when,
+            index=self._callbacks_counter,
+            fn=callback,
+            args=args)
+        heapq.heappush(self._schedule, scheduled_callback)
         self._callbacks_counter += 1
 
     def time(self) -> float:
@@ -36,15 +41,15 @@ class Loop:
     def run_forever(self) -> None:
         self._running = True
         while self._running:
-            if not self._callbacks:
+            if not self._schedule:
                 time.sleep(1)
             else:
-                callback = self._callbacks[0]
+                callback = self._schedule[0]
                 now = self.time()
                 if callback.when > now:
                     time.sleep(callback.when - now)
                 else:
-                    callback = heapq.heappop(self._callbacks)
+                    callback = heapq.heappop(self._schedule)
                     callback()
 
     def run_until_complete(self, future):
