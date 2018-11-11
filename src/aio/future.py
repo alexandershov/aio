@@ -1,3 +1,4 @@
+import abc
 import collections
 import contextlib
 import logging
@@ -16,6 +17,32 @@ class InvalidStateError(BaseError):
 
 
 _MISSING = object()
+
+
+class BaseFuture(metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def result(self) -> object:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def set_result(self, result) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def exception(self) -> Exception:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def set_exception(self, exception) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def done(self) -> bool:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def add_done_callback(self, callback) -> None:
+        raise NotImplementedError
 
 
 # TODO: add BaseFuture interface, so Future & Task will inherit from it
