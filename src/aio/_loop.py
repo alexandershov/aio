@@ -44,13 +44,16 @@ class Loop:
             if not self._schedule:
                 time.sleep(1)
             else:
-                item = self._schedule[0]
-                now = self.time()
-                if item.when > now:
-                    time.sleep(item.when - now)
-                else:
-                    item = heapq.heappop(self._schedule)
-                    item()
+                self._run_or_wait_for_next_item()
+
+    def _run_or_wait_for_next_item(self):
+        item = self._schedule[0]
+        now = self.time()
+        if item.when > now:
+            time.sleep(item.when - now)
+        else:
+            item = heapq.heappop(self._schedule)
+            item()
 
     def run_until_complete(self, future):
         if inspect.iscoroutine(future):
