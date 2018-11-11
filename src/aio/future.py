@@ -81,8 +81,14 @@ class Future:
         self._schedule_callbacks()
 
     def __str__(self):
-        status = 'done' if self._done else 'pending'
-        return f'<Future {status}>'
+        if self.done():
+            if self._result is _MISSING:
+                state = f'exception = {self._exception}'
+            else:
+                state = f'result = {self._result}'
+        else:
+            state = 'pending'
+        return f'<Future {state}>'
 
 
 def _build_exception_instance(exception) -> Exception:
