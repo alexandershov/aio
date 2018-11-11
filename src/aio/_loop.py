@@ -42,6 +42,7 @@ class Loop:
             args=args)
         self._add_to_schedule(item)
 
+    # noinspection PyMethodMayBeStatic
     def time(self) -> float:
         return time.monotonic()
 
