@@ -18,33 +18,33 @@ _MISSING = object()
 class Future:
     def __init__(self):
         self._result = _MISSING
-        self._exception = _MISSING
+        self._exception: Exception = _MISSING
         self._done = False
         self._callbacks = collections.deque()
 
-    def result(self):
+    def result(self) -> object:
         self._validate_done()
         if self._result is _MISSING:
             raise self._exception
         return self._result
 
-    def set_result(self, result):
+    def set_result(self, result) -> None:
         with self._transition_to_done():
             self._result = result
             self._exception = None
 
-    def exception(self):
+    def exception(self) -> Exception:
         self._validate_done()
         return self._exception
 
-    def set_exception(self, exception):
+    def set_exception(self, exception) -> None:
         with self._transition_to_done():
             self._exception = _build_exception_instance(exception)
 
-    def done(self):
+    def done(self) -> bool:
         return self._done
 
-    def add_done_callback(self, callback):
+    def add_done_callback(self, callback) -> None:
         self._callbacks.append(callback)
         if self.done():
             self._schedule_callbacks()
