@@ -79,6 +79,7 @@ class Loop:
             item()
 
     def _add_to_schedule(self, item: _ScheduleItem) -> None:
+        logger.debug('Adding %s to %s', item, self)
         heapq.heappush(self._schedule, item)
         self._callbacks_counter += 1
 
