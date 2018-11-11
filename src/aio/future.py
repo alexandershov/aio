@@ -4,7 +4,11 @@ import contextlib
 from . import _loop
 
 
-class InvalidStateError(Exception):
+class BaseError(Exception):
+    pass
+
+
+class InvalidStateError(BaseError):
     pass
 
 
