@@ -39,12 +39,7 @@ class Future:
 
     def set_exception(self, exception):
         with self._transition_to_done():
-            if isinstance(exception, Exception):
-                self._exception = exception
-            elif _is_subclass_of_exception(exception):
-                self._exception = exception()
-            else:
-                raise TypeError(f'{exception!r} is not an exception')
+            self._exception = _build_exception_instance(exception)
 
     def done(self):
         return self._done
@@ -82,5 +77,13 @@ class Future:
         self._schedule_callbacks()
 
 
-def _is_subclass_of_exception(exception):
+def _build_exception_instance(exception) -> Exception:
+    if isinstance(exception, Exception):
+        return exception
+    if _is_subclass_of_exception(exception):
+        return exception()
+    raise TypeError(f'{exception!r} is not an exception')
+
+
+def _is_subclass_of_exception(exception) -> bool:
     return isinstance(exception, type) and issubclass(exception, Exception)
