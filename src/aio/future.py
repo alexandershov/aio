@@ -33,6 +33,7 @@ class Future:
         return self._result
 
     def set_result(self, result) -> None:
+        logger.debug('Setting result of %s to %r', self, result)
         with self._transition_to_done():
             self._result = result
             self._exception = None
@@ -42,6 +43,7 @@ class Future:
         return self._exception
 
     def set_exception(self, exception) -> None:
+        logger.debug('Setting result of %s to %r', self, exception)
         with self._transition_to_done():
             self._exception = _build_exception_instance(exception)
 
@@ -73,7 +75,6 @@ class Future:
 
     def _mark_as_done(self):
         self._done = True
-        logger.debug('%s is done', self)
 
     @contextlib.contextmanager
     def _transition_to_done(self):
