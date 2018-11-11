@@ -32,7 +32,6 @@ class Future:
         with self._transition_to_done():
             self._result = result
             self._exception = None
-        self._schedule_callbacks()
 
     def exception(self):
         self._validate_done()
@@ -46,7 +45,6 @@ class Future:
                 self._exception = exception()
             else:
                 raise TypeError(f'{exception!r} is not an exception')
-        self._schedule_callbacks()
 
     def done(self):
         return self._done
@@ -81,3 +79,4 @@ class Future:
         self._validate_not_done()
         yield
         self._mark_as_done()
+        self._schedule_callbacks()
