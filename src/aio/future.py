@@ -82,10 +82,7 @@ class Future:
         self._schedule_callbacks()
 
     def __str__(self) -> str:
-        if self.done():
-            state = self._get_done_state()
-        else:
-            state = 'pending'
+        state = self._get_done_state() if self.done() else 'pending'
         return f'<Future {state}>'
 
     def _has_failed(self) -> bool:
