@@ -44,9 +44,9 @@ class Loop:
             if not self._schedule:
                 time.sleep(1)
             else:
-                self._run_or_wait_for_next_item()
+                self._run_next_item_or_wait()
 
-    def _run_or_wait_for_next_item(self):
+    def _run_next_item_or_wait(self):
         item = self._schedule[0]
         now = self.time()
         if item.when > now:
@@ -59,7 +59,9 @@ class Loop:
         if inspect.iscoroutine(future):
             future = aio.Task(future)
         future.add_done_callback(lambda _: self.stop())
+
         self.run_forever()
+
         if not future.done():
             raise RuntimeError(f'Loop stopped before {future} completed')
         return future.result()
