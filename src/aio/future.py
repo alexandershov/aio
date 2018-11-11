@@ -94,8 +94,8 @@ class Future:
 
     def _get_done_state(self) -> str:
         if self._has_failed():
-            return f'exception={self._exception}'
-        return f'result={self._result}'
+            return f'exception={self._exception!r}'
+        return f'result={self._result!r}'
 
 
 def _build_exception_instance(exception) -> Exception:
