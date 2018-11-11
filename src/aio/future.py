@@ -72,6 +72,7 @@ class Future:
 
     def _mark_as_done(self):
         self._done = True
+        logger.debug('%s is done', self)
 
     @contextlib.contextmanager
     def _transition_to_done(self):
@@ -93,8 +94,8 @@ class Future:
 
     def _get_done_state(self) -> str:
         if self._has_failed():
-            return f'exception = {self._exception}'
-        return f'result = {self._result}'
+            return f'exception={self._exception}'
+        return f'result={self._result}'
 
 
 def _build_exception_instance(exception) -> Exception:
