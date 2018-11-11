@@ -1,7 +1,10 @@
 import collections
 import contextlib
+import logging
 
 from . import _loop
+
+logger = logging.getLogger(__name__)
 
 
 class BaseError(Exception):
@@ -15,6 +18,7 @@ class InvalidStateError(BaseError):
 _MISSING = object()
 
 
+# TODO: add BaseFuture interface, so Future & Task will inherit from it
 class Future:
     def __init__(self):
         self._result = _MISSING
