@@ -88,7 +88,6 @@ class Future:
         return f'<Future {state}>'
 
     def __repr__(self) -> str:
-        # TODO: should it be different from str?
         return str(self)
 
     def _has_failed(self) -> bool:

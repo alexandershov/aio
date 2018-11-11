@@ -39,5 +39,4 @@ class Task(aio.Future):
         return f'<Task {self._status} {self._coro}>'
 
     def __repr__(self) -> str:
-        # TODO: should it be different from str?
         return str(self)
