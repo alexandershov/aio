@@ -7,7 +7,7 @@ def test_get_event_loop():
     assert aio.get_event_loop() is aio.get_event_loop()
 
 
-def test_is_running(loop):
+def test_fresh_loop_is_not_running(loop):
     assert not loop.is_running()
 
 
@@ -20,9 +20,10 @@ def test_call_soon(loop):
 def test_call_later(loop):
     calls = []
     loop.call_later(0.0001, lambda: calls.append('first'))
+    loop.call_later(0.0002, lambda: calls.append('second'))
     loop.call_later(0.0003, _Stopper(loop))
     loop.run_forever()
-    assert calls == ['first']
+    assert calls == ['first', 'second']
 
 
 def test_call_at(loop):
