@@ -26,7 +26,7 @@ class Task(aio.future.BaseFuture):
         return self._future.result()
 
     def set_result(self, result) -> None:
-        self._future.set_result(result)
+        raise RuntimeError(f'{self} does not support set_result()')
 
     def exception(self) -> Exception:
         return self._future.exception()
