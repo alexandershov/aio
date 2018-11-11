@@ -12,14 +12,33 @@ def ensure_future(fut_or_coro):
     return fut_or_coro
 
 
-class Task(aio.Future):
+class Task(aio.future.BaseFuture):
     def __init__(self, coro):
         super().__init__()
         self._coro = coro
         self._status = 'pending'
+        self._future = aio.Future()
         loop = aio.get_event_loop()
         loop.call_soon(self._run)
         logger.debug('Created %s', self)
+
+    def result(self) -> object:
+        return self._future.result()
+
+    def set_result(self, result) -> None:
+        self._future.set_result(result)
+
+    def exception(self) -> Exception:
+        return self._future.exception()
+
+    def set_exception(self, exception) -> None:
+        self._future.set_exception(exception)
+
+    def done(self) -> bool:
+        return self._future.done()
+
+    def add_done_callback(self, callback) -> None:
+        self._future.add_done_callback(callback)
 
     def _run(self):
         self._status = 'running'
@@ -29,7 +48,7 @@ class Task(aio.Future):
         except StopIteration as exc:
             # TODO: what about if there's some exception?
             self._status = 'done'
-            self.set_result(exc.value)
+            self._future.set_result(exc.value)
         else:
             if not isinstance(future, aio.Future):
                 raise RuntimeError(f'{future!r} is not a future')
