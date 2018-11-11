@@ -32,7 +32,7 @@ class Task(aio.future.BaseFuture):
         return self._future.exception()
 
     def set_exception(self, exception) -> None:
-        self._future.set_exception(exception)
+        raise RuntimeError(f'{self} does not support set_exception()')
 
     def done(self) -> bool:
         return self._future.done()
