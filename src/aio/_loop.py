@@ -44,13 +44,13 @@ class Loop:
             if not self._schedule:
                 time.sleep(1)
             else:
-                callback = self._schedule[0]
+                item = self._schedule[0]
                 now = self.time()
-                if callback.when > now:
-                    time.sleep(callback.when - now)
+                if item.when > now:
+                    time.sleep(item.when - now)
                 else:
-                    callback = heapq.heappop(self._schedule)
-                    callback()
+                    item = heapq.heappop(self._schedule)
+                    item()
 
     def run_until_complete(self, future):
         if inspect.iscoroutine(future):
