@@ -58,6 +58,7 @@ class Future:
         return self.result()
 
     def _schedule_callbacks(self):
+        logger.info('Scheduling callbacks for %s', self)
         loop = _loop.get_event_loop()
         while self._callbacks:
             loop.call_soon(self._callbacks.popleft(), self)
