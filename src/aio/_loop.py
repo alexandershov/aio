@@ -46,6 +46,7 @@ class Loop:
         return time.monotonic()
 
     def stop(self) -> None:
+        logger.debug('Stopping %s', self)
         self._running = False
 
     def is_running(self) -> bool:
