@@ -28,7 +28,7 @@ class Future:
 
     def result(self) -> object:
         self._validate_done()
-        if self._result is _MISSING:
+        if self._has_failed():
             raise self._exception
         return self._result
 
@@ -80,15 +80,19 @@ class Future:
         self._mark_as_done()
         self._schedule_callbacks()
 
-    def __str__(self):
+    def __str__(self) -> str:
         if self.done():
             state = self._get_done_state()
         else:
             state = 'pending'
         return f'<Future {state}>'
 
-    def _get_done_state(self):
-        if self._result is _MISSING:
+    def _has_failed(self) -> bool:
+        assert self._done
+        return self._result is _MISSING
+
+    def _get_done_state(self) -> str:
+        if self._has_failed():
             return f'exception = {self._exception}'
         return f'result = {self._result}'
 
