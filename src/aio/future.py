@@ -82,13 +82,15 @@ class Future:
 
     def __str__(self):
         if self.done():
-            if self._result is _MISSING:
-                state = f'exception = {self._exception}'
-            else:
-                state = f'result = {self._result}'
+            state = self._get_done_state()
         else:
             state = 'pending'
         return f'<Future {state}>'
+
+    def _get_done_state(self):
+        if self._result is _MISSING:
+            return f'exception = {self._exception}'
+        return f'result = {self._result}'
 
 
 def _build_exception_instance(exception) -> Exception:
