@@ -26,7 +26,7 @@ class Task(aio.Future):
             future.add_done_callback(lambda _: self._run())
 
     def __str__(self):
-        return f'Task <{self._status()}, {self._coro}>'
+        return f'<Task {self._status()} {self._coro}>'
 
     def _status(self):
         if self.done():
