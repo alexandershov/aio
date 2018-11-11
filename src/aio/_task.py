@@ -35,5 +35,9 @@ class Task(aio.Future):
                 raise RuntimeError(f'{future!r} is not a future')
             future.add_done_callback(lambda _: self._run())
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'<Task {self._status} {self._coro}>'
+
+    def __repr__(self) -> str:
+        # TODO: should it be different from str?
+        return str(self)
