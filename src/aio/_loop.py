@@ -1,9 +1,12 @@
 import heapq
+import logging
 import time
 import typing as tp
 from dataclasses import dataclass, field
 
 import aio
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, order=True)
