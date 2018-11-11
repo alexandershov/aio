@@ -7,6 +7,18 @@ from dataclasses import dataclass, field
 import aio
 
 
+@dataclass(frozen=True, order=True)
+class _ScheduleItem:
+    when: float
+    index: int
+
+    callback: tp.Callable = field(compare=False)
+    args: tp.Tuple = field(compare=False)
+
+    def __call__(self):
+        return self.callback(*self.args)
+
+
 class Loop:
     def __init__(self):
         self._running = False
@@ -26,8 +38,7 @@ class Loop:
             index=self._callbacks_counter,
             callback=callback,
             args=args)
-        heapq.heappush(self._schedule, item)
-        self._callbacks_counter += 1
+        self._add_to_schedule(item)
 
     def time(self) -> float:
         return time.monotonic()
@@ -46,15 +57,6 @@ class Loop:
             else:
                 self._run_next_item_or_wait()
 
-    def _run_next_item_or_wait(self):
-        item = self._schedule[0]
-        now = self.time()
-        if item.when > now:
-            time.sleep(item.when - now)
-        else:
-            item = heapq.heappop(self._schedule)
-            item()
-
     def run_until_complete(self, future):
         if inspect.iscoroutine(future):
             future = aio.Task(future)
@@ -66,17 +68,18 @@ class Loop:
             raise RuntimeError(f'Loop stopped before {future} completed')
         return future.result()
 
+    def _run_next_item_or_wait(self):
+        item = self._schedule[0]
+        now = self.time()
+        if item.when > now:
+            time.sleep(item.when - now)
+        else:
+            item = heapq.heappop(self._schedule)
+            item()
 
-@dataclass(frozen=True, order=True)
-class _ScheduleItem:
-    when: float
-    index: int
-
-    callback: tp.Callable = field(compare=False)
-    args: tp.Tuple = field(compare=False)
-
-    def __call__(self):
-        return self.callback(*self.args)
+    def _add_to_schedule(self, item: _ScheduleItem) -> None:
+        heapq.heappush(self._schedule, item)
+        self._callbacks_counter += 1
 
 
 _loop = Loop()
