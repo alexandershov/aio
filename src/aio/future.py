@@ -46,7 +46,7 @@ class BaseFuture(metaclass=abc.ABCMeta):
 
 
 # TODO: add BaseFuture interface, so Future & Task will inherit from it
-class Future:
+class Future(BaseFuture):
     def __init__(self):
         self._result = _MISSING
         self._exception: Exception = _MISSING
