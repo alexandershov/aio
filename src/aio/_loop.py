@@ -83,6 +83,10 @@ class Loop:
         heapq.heappush(self._schedule, item)
         self._callbacks_counter += 1
 
+    def __str__(self):
+        state = 'running' if self._running else 'pending'
+        return f'<Loop {state}>'
+
 
 _loop = Loop()
 
