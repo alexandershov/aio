@@ -52,7 +52,7 @@ class Loop:
         return self._running
 
     def run_forever(self) -> None:
-        logger.info('Running loop %s forever', self)
+        logger.debug('Running %s forever', self)
         self._running = True
         while self._running:
             if not self._schedule:
@@ -61,6 +61,7 @@ class Loop:
                 self._run_next_item_or_wait()
 
     def run_until_complete(self, future):
+        logger.debug('Running %s until %s is complete', self, future)
         future = aio.ensure_future(future)
         future.add_done_callback(lambda _: self.stop())
 
