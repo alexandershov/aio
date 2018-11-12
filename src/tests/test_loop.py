@@ -102,7 +102,7 @@ def test_coroutine(loop):
 
 
 def test_coroutine_exception(loop):
-    task = aio.Task(coro_zero_division())
+    task = aio.Task(_coro_zero_division())
     with pytest.raises(ZeroDivisionError):
         loop.run_until_complete(task)
     with pytest.raises(ZeroDivisionError):
@@ -110,7 +110,7 @@ def test_coroutine_exception(loop):
 
 
 def test_nested_coroutine(loop):
-    assert loop.run_until_complete(coro_add(1, 2)) == 3
+    assert loop.run_until_complete(_coro_add(1, 2)) == 3
 
 
 def test_coroutine_with_failed_future(future, loop):
@@ -134,12 +134,11 @@ async def wait(future):
         return result
 
 
-# TODO: start coro with the underscore
-async def coro_zero_division():
+async def _coro_zero_division():
     return 1 / 0
 
 
-async def coro_add(x, y):
+async def _coro_add(x, y):
     await sleep(0.0001)
     return x + y
 
