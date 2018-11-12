@@ -46,9 +46,11 @@ class Task(aio.future.BaseFuture):
         try:
             future = self._coro.send(None)
         except StopIteration as exc:
-            # TODO: what about if there's some exception?
             self._status = 'done'
             self._future.set_result(exc.value)
+        except Exception as exc:
+            self._status = 'done'
+            self._future.set_exception(exc)
         else:
             if not isinstance(future, aio.Future):
                 raise RuntimeError(f'{future!r} is not a future')
