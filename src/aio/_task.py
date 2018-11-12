@@ -3,7 +3,7 @@ import logging
 
 import aio
 
-logger = logging.getLogger(__name__)  # TODO: what's the best practice to create logger?
+logger = logging.getLogger(__name__)
 
 
 def ensure_future(fut_or_coro):
