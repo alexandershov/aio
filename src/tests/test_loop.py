@@ -98,7 +98,7 @@ def test_run_until_complete_with_forever_pending_future(future, loop):
 
 
 def test_coroutine(loop):
-    assert loop.run_until_complete(sleep(0.0001)) is None
+    assert loop.run_until_complete(_sleep(0.0001)) is None
 
 
 def test_coroutine_exception(loop):
@@ -139,11 +139,11 @@ async def _coro_zero_division():
 
 
 async def _coro_add(x, y):
-    await sleep(0.0001)
+    await _sleep(0.0001)
     return x + y
 
 
-async def sleep(duration):
+async def _sleep(duration):
     future = aio.Future()
     loop = aio.get_event_loop()
     loop.call_later(duration, future.set_result, None)
