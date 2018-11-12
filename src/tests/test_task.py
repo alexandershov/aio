@@ -4,6 +4,7 @@ import aio
 
 
 def test_doesnt_support_set_result():
+    # TODO: get rid of warning '_coro_pass' was never awaited
     task = aio.Task(_coro_pass())
     with pytest.raises(RuntimeError):
         task.set_result(9)
