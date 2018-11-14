@@ -19,10 +19,20 @@ def loop_fixture(request):
 
 @pytest.fixture(autouse=True, scope='session')
 def logging_fixture(request):
-    del request  # unused
     logger = logging.getLogger('aio')
-    logger.setLevel(logging.DEBUG)
+    level = _get_logging_level(request)
+    if level is not None:
+        logger.setLevel(level)
     handler = logging.StreamHandler()
     formatter = logging.Formatter('%(levelname)s:%(name)s:%(message)s')
     handler.setFormatter(formatter)
     logger.addHandler(handler)
+
+
+def _get_logging_level(request):
+    level_name = request.config.getoption('--log-level')
+    if level_name is None:
+        return None
+    if not hasattr(logging, level_name):
+        raise RuntimeError(f'Unknown log level: {level_name}')
+    return getattr(logging, level_name)
