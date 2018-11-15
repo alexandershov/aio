@@ -133,11 +133,19 @@ def test_callback_exception(loop):
 
 
 def test_cancel_handle(loop):
-    calls = []
-    handle = loop.call_soon(calls.append, 'first')
+    handle = loop.call_soon(loop.stop)
     assert not handle.cancelled()
     handle.cancel()
     assert handle.cancelled()
+
+
+def test_cancel_call_soon(loop):
+    calls = []
+    handle = loop.call_soon(calls.append, 'first')
+    loop.call_soon(_Stopper(loop))
+    handle.cancel()
+    loop.run_forever()
+    assert calls == []
 
 
 def _always_raises(exception):

@@ -9,28 +9,34 @@ import aio
 logger = logging.getLogger(__name__)
 
 
-@dataclass(frozen=True, order=True)
+@dataclass(order=True)
 class _Callback:
     when: float
     index: int
 
     callable: tp.Callable = field(compare=False)
     args: tp.Tuple = field(compare=False)
+    cancelled: bool = field(compare=False)
 
     def __call__(self):
-        return self.callable(*self.args)
+        if self.cancelled:
+            logger.debug('%s is cancelled, skipping', self)
+        else:
+            return self.callable(*self.args)
+
+    def cancel(self):
+        self.cancelled = True
 
 
 class Handle:
     def __init__(self, callback: _Callback) -> None:
         self._callback = callback
-        self._cancelled = False
 
     def cancel(self) -> None:
-        self._cancelled = True
+        self._callback.cancel()
 
     def cancelled(self) -> bool:
-        return self._cancelled
+        return self._callback.cancelled
 
 
 class Loop:
@@ -51,7 +57,8 @@ class Loop:
             when=when,
             index=self._callbacks_counter,
             callable=callback,
-            args=args)
+            args=args,
+            cancelled=False)
         self._add_callback(callback)
         return Handle(callback)
 
