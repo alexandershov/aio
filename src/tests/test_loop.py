@@ -148,6 +148,15 @@ def test_cancel_call_soon(loop):
     assert calls == []
 
 
+def test_cancel_call_later(loop):
+    calls = []
+    handle = loop.call_later(0.001, calls.append, 'first')
+    loop.call_later(0.001, _Stopper(loop))
+    handle.cancel()
+    loop.run_forever()
+    assert calls == []
+
+
 def _always_raises(exception):
     raise exception
 
