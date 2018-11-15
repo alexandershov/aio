@@ -48,8 +48,7 @@ def test_callback_ordering(loop):
 
 def test_call_soon_with_arguments(loop):
     calls = []
-    loop.call_soon(lambda seq, item: seq.append(item),
-                   calls, 'first')
+    loop.call_soon(calls.append, 'first')
     loop.call_soon(_Stopper(loop))
     loop.run_forever()
     assert calls == ['first']
