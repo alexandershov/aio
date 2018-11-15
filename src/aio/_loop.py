@@ -35,12 +35,12 @@ class Loop:
         return self.call_at(when, callback, *args)
 
     def call_at(self, when, callback, *args):
-        item = _Callback(
+        callback = _Callback(
             when=when,
             index=self._callbacks_counter,
             callback=callback,
             args=args)
-        self._add_callback(item)
+        self._add_callback(callback)
 
     # noinspection PyMethodMayBeStatic
     def time(self) -> float:
@@ -60,7 +60,7 @@ class Loop:
             if not self._callbacks:
                 time.sleep(1)
             else:
-                self._run_next_item_or_wait()
+                self._run_next_callback_or_wait()
 
     def run_until_complete(self, future):
         logger.debug('Running %s until %s is complete', self, future)
@@ -73,18 +73,18 @@ class Loop:
             raise RuntimeError(f'Loop stopped before {future} completed')
         return future.result()
 
-    def _run_next_item_or_wait(self):
-        item = self._callbacks[0]
+    def _run_next_callback_or_wait(self):
+        callback = self._callbacks[0]
         now = self.time()
-        if item.when > now:
-            time.sleep(item.when - now)
+        if callback.when > now:
+            time.sleep(callback.when - now)
         else:
-            item = heapq.heappop(self._callbacks)
-            item()
+            callback = heapq.heappop(self._callbacks)
+            callback()
 
-    def _add_callback(self, item: _Callback) -> None:
-        logger.debug('Adding %s to %s', item, self)
-        heapq.heappush(self._callbacks, item)
+    def _add_callback(self, callback: _Callback) -> None:
+        logger.debug('Adding %s to %s', callback, self)
+        heapq.heappush(self._callbacks, callback)
         self._callbacks_counter += 1
 
     def __str__(self):
