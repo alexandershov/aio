@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 @functools.total_ordering
 class _Callback:
+    # noinspection PyShadowingBuiltins
     def __init__(
             self,
             when: float,
@@ -53,7 +54,7 @@ class _Callback:
         return f'_Callback(when={self._when}, function={self._function}, args={self._args})'
 
     def _as_tuple(self):
-        return (self._when, self._index)
+        return self._when, self._index
 
 
 class Handle:
