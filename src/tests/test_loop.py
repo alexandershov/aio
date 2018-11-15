@@ -125,6 +125,17 @@ def test_coroutine_with_done_future(future, loop):
     assert result == 9
 
 
+def test_callback_exception(loop):
+    loop.call_soon(_always_raises, ZeroDivisionError)
+    loop.call_soon(_Stopper(loop))
+    loop.run_forever()
+    assert not loop.is_running()
+
+
+def _always_raises(exception):
+    raise exception
+
+
 async def _wait(future):
     try:
         result = await future

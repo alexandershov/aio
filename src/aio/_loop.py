@@ -80,7 +80,14 @@ class Loop:
             time.sleep(callback.when - now)
         else:
             callback = heapq.heappop(self._callbacks)
-            callback()
+            # noinspection PyBroadException
+            try:
+                callback()
+            except Exception as exc:
+                self._handle_callback_exception(callback, exc)
+
+    def _handle_callback_exception(self, callback: _Callback, exc: Exception) -> None:
+        logger.error('Got an exception during handling of %s: ', callback, exc_info=True)
 
     def _add_callback(self, callback: _Callback) -> None:
         logger.debug('Adding %s to %s', callback, self)
