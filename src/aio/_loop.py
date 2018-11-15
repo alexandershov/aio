@@ -14,11 +14,11 @@ class _Callback:
     when: float
     index: int
 
-    callback: tp.Callable = field(compare=False)
+    callable: tp.Callable = field(compare=False)
     args: tp.Tuple = field(compare=False)
 
     def __call__(self):
-        return self.callback(*self.args)
+        return self.callable(*self.args)
 
 
 class Loop:
@@ -38,7 +38,7 @@ class Loop:
         callback = _Callback(
             when=when,
             index=self._callbacks_counter,
-            callback=callback,
+            callable=callback,
             args=args)
         self._add_callback(callback)
 
