@@ -110,7 +110,7 @@ class Future(BaseFuture):
         self._schedule_callbacks()
 
     def __str__(self) -> str:
-        state = self._get_done_state() if self.done() else 'pending'
+        state = self._get_state()
         return f'<Future {state}>'
 
     def __repr__(self) -> str:
@@ -120,7 +120,9 @@ class Future(BaseFuture):
         assert self._done
         return self._result is _MISSING
 
-    def _get_done_state(self) -> str:
+    def _get_state(self) -> str:
+        if not self.done():
+            return 'pending'
         if self._has_failed():
             return f'exception={self._exception!r}'
         return f'result={self._result!r}'
