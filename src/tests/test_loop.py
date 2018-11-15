@@ -56,9 +56,7 @@ def test_call_soon_with_arguments(loop):
 
 def test_call_later_with_arguments(loop):
     calls = []
-    loop.call_later(0.0001,
-                    lambda seq, item: seq.append(item),
-                    calls, 'first')
+    loop.call_later(0.0001, calls.append, 'first')
     loop.call_later(0.0001, _Stopper(loop))
     loop.run_forever()
     assert calls == ['first']
