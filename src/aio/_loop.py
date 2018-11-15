@@ -60,7 +60,7 @@ class Loop:
             if not self._callbacks:
                 time.sleep(1)
             else:
-                self._run_next_callback_or_wait()
+                self._call_next_callback_or_wait()
 
     def run_until_complete(self, future):
         logger.debug('Running %s until %s is complete', self, future)
@@ -73,7 +73,7 @@ class Loop:
             raise RuntimeError(f'Loop stopped before {future} completed')
         return future.result()
 
-    def _run_next_callback_or_wait(self):
+    def _call_next_callback_or_wait(self):
         callback = self._callbacks[0]
         now = self.time()
         if callback.when > now:
