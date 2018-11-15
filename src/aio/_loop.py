@@ -106,6 +106,7 @@ class Loop:
             except Exception:
                 self._handle_callback_exception(callback)
 
+    # noinspection PyMethodMayBeStatic
     def _handle_callback_exception(self, callback: _Callback) -> None:
         logger.error('Got an exception during handling of %s: ', callback, exc_info=True)
 
