@@ -45,14 +45,14 @@ class Loop:
         self._callbacks = []
         self._callbacks_counter = 0
 
-    def call_soon(self, callback, *args):
+    def call_soon(self, callback, *args) -> Handle:
         return self.call_later(0, callback, *args)
 
-    def call_later(self, delay, callback, *args):
+    def call_later(self, delay, callback, *args) -> Handle:
         when = self.time() + delay
         return self.call_at(when, callback, *args)
 
-    def call_at(self, when, callback, *args):
+    def call_at(self, when, callback, *args) -> Handle:
         callback = _Callback(
             when=when,
             index=self._callbacks_counter,
