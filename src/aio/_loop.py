@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True, order=True)
-class _ScheduleItem:
+class _Callback:
     when: float
     index: int
 
@@ -35,7 +35,7 @@ class Loop:
         return self.call_at(when, callback, *args)
 
     def call_at(self, when, callback, *args):
-        item = _ScheduleItem(
+        item = _Callback(
             when=when,
             index=self._callbacks_counter,
             callback=callback,
@@ -82,7 +82,7 @@ class Loop:
             item = heapq.heappop(self._callbacks)
             item()
 
-    def _add_to_schedule(self, item: _ScheduleItem) -> None:
+    def _add_to_schedule(self, item: _Callback) -> None:
         logger.debug('Adding %s to %s', item, self)
         heapq.heappush(self._callbacks, item)
         self._callbacks_counter += 1
