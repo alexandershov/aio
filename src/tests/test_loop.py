@@ -132,7 +132,7 @@ def test_callback_exception(loop):
     assert not loop.is_running()
 
 
-def test_cancel_handle(loop):
+def test_handle(loop):
     handle = loop.call_soon(loop.stop)
     assert not handle.cancelled()
     handle.cancel()
@@ -142,8 +142,8 @@ def test_cancel_handle(loop):
 def test_cancel_call_soon(loop):
     calls = []
     handle = loop.call_soon(calls.append, 'first')
-    loop.call_soon(_Stopper(loop))
     handle.cancel()
+    loop.call_soon(_Stopper(loop))
     loop.run_forever()
     assert calls == []
 
@@ -151,8 +151,8 @@ def test_cancel_call_soon(loop):
 def test_cancel_call_later(loop):
     calls = []
     handle = loop.call_later(0.001, calls.append, 'first')
-    loop.call_later(0.001, _Stopper(loop))
     handle.cancel()
+    loop.call_later(0.001, _Stopper(loop))
     loop.run_forever()
     assert calls == []
 
@@ -161,8 +161,8 @@ def test_cancel_call_at(loop):
     calls = []
     now = loop.time()
     handle = loop.call_at(now + 0.001, calls.append, 'first')
-    loop.call_at(now + 0.001, _Stopper(loop))
     handle.cancel()
+    loop.call_at(now + 0.001, _Stopper(loop))
     loop.run_forever()
     assert calls == []
 
