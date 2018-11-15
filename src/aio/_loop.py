@@ -24,7 +24,7 @@ class _ScheduleItem:
 class Loop:
     def __init__(self):
         self._running = False
-        self._schedule = []
+        self._callbacks = []
         self._callbacks_counter = 0
 
     def call_soon(self, callback, *args):
@@ -57,7 +57,7 @@ class Loop:
         logger.debug('Running %s forever', self)
         self._running = True
         while self._running:
-            if not self._schedule:
+            if not self._callbacks:
                 time.sleep(1)
             else:
                 self._run_next_item_or_wait()
@@ -74,17 +74,17 @@ class Loop:
         return future.result()
 
     def _run_next_item_or_wait(self):
-        item = self._schedule[0]
+        item = self._callbacks[0]
         now = self.time()
         if item.when > now:
             time.sleep(item.when - now)
         else:
-            item = heapq.heappop(self._schedule)
+            item = heapq.heappop(self._callbacks)
             item()
 
     def _add_to_schedule(self, item: _ScheduleItem) -> None:
         logger.debug('Adding %s to %s', item, self)
-        heapq.heappush(self._schedule, item)
+        heapq.heappush(self._callbacks, item)
         self._callbacks_counter += 1
 
     def __str__(self):
