@@ -1,31 +1,59 @@
+import functools
 import heapq
 import logging
 import time
 import typing as tp
-from dataclasses import dataclass, field
 
 import aio
 
 logger = logging.getLogger(__name__)
 
 
-@dataclass(order=True)
+@functools.total_ordering
 class _Callback:
-    when: float
-    index: int
+    def __init__(
+            self,
+            when: float,
+            index: int,
+            function: tp.Callable,
+            args: tp.Tuple) -> None:
+        self._when = when
+        self._index = index
+        self._function = function
+        self._args = args
+        self._cancelled = False
 
-    callable: tp.Callable = field(compare=False)
-    args: tp.Tuple = field(compare=False)
-    cancelled: bool = field(compare=False)
+    def cancelled(self) -> bool:
+        return self._cancelled
 
-    def __call__(self):
-        if self.cancelled:
-            logger.debug('%s is cancelled, skipping', self)
-        else:
-            return self.callable(*self.args)
+    @property
+    def when(self):
+        return self._when
 
     def cancel(self):
-        self.cancelled = True
+        self._cancelled = True
+
+    def __call__(self):
+        if self.cancelled():
+            logger.debug('%s is cancelled, skipping', self)
+        else:
+            return self._function(*self._args)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, _Callback):
+            return NotImplemented
+        return self._as_tuple() == other._as_tuple()
+
+    def __le__(self, other: object) -> bool:
+        if not isinstance(other, _Callback):
+            return NotImplemented
+        return self._as_tuple() < other._as_tuple()
+
+    def __repr__(self):
+        return f'_Callback(when={self._when}, function={self._function}, args={self._args})'
+
+    def _as_tuple(self):
+        return (self._when, self._index)
 
 
 class Handle:
@@ -36,13 +64,13 @@ class Handle:
         self._callback.cancel()
 
     def cancelled(self) -> bool:
-        return self._callback.cancelled
+        return self._callback.cancelled()
 
 
 class Loop:
     def __init__(self):
         self._running = False
-        self._callbacks = []
+        self._callbacks: tp.List[_Callback] = []
         self._callbacks_counter = 0
 
     def call_soon(self, callback, *args) -> Handle:
@@ -56,9 +84,8 @@ class Loop:
         callback = _Callback(
             when=when,
             index=self._callbacks_counter,
-            callable=callback,
-            args=args,
-            cancelled=False)
+            function=callback,
+            args=args)
         self._add_callback(callback)
         return Handle(callback)
 
