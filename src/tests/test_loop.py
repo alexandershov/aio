@@ -132,7 +132,7 @@ def test_callback_exception(loop):
     assert not loop.is_running()
 
 
-def test_cancel_call_soon(loop):
+def test_cancel_handle(loop):
     calls = []
     handle = loop.call_soon(calls.append, 'first')
     assert not handle.cancelled()
