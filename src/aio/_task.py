@@ -16,7 +16,7 @@ class Task(aio.future.BaseFuture):
     def __init__(self, coro):
         super().__init__()
         self._coro = coro
-        self._status = 'pending'
+        self._state = 'pending'
         self._future = aio.Future()
         loop = aio.get_event_loop()
         loop.call_soon(self._run)
@@ -41,15 +41,15 @@ class Task(aio.future.BaseFuture):
         self._future.add_done_callback(callback)
 
     def _run(self):
-        self._status = 'running'
+        self._state = 'running'
         logger.debug('Running %s', self)
         try:
             future = self._coro.send(None)
         except StopIteration as exc:
-            self._status = 'done'
+            self._state = 'done'
             self._future.set_result(exc.value)
         except Exception as exc:
-            self._status = 'done'
+            self._state = 'done'
             self._future.set_exception(exc)
         else:
             if not isinstance(future, aio.Future):
@@ -57,7 +57,7 @@ class Task(aio.future.BaseFuture):
             future.add_done_callback(lambda _: self._run())
 
     def __str__(self) -> str:
-        return f'<Task {self._status} {self._coro}>'
+        return f'<Task {self._state} {self._coro}>'
 
     def __repr__(self) -> str:
         return str(self)
