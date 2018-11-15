@@ -83,7 +83,7 @@ class Loop:
             # noinspection PyBroadException
             try:
                 callback()
-            except Exception as exc:
+            except Exception:
                 self._handle_callback_exception(callback)
 
     def _handle_callback_exception(self, callback: _Callback) -> None:
