@@ -28,10 +28,10 @@ class _Callback:
         return self._cancelled
 
     @property
-    def when(self):
+    def when(self) -> float:
         return self._when
 
-    def cancel(self):
+    def cancel(self) -> None:
         self._cancelled = True
 
     def __call__(self):
@@ -50,7 +50,7 @@ class _Callback:
             return NotImplemented
         return self._as_tuple() < other._as_tuple()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'_Callback(when={self._when}, function={self._function}, args={self._args})'
 
     def _as_tuple(self):
