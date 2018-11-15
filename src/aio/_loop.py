@@ -21,6 +21,18 @@ class _Callback:
         return self.callable(*self.args)
 
 
+class Handle:
+    def __init__(self, callback: _Callback) -> None:
+        self._callback = callback
+        self._cancelled = False
+
+    def cancel(self) -> None:
+        self._cancelled = True
+
+    def cancelled(self) -> bool:
+        return self._cancelled
+
+
 class Loop:
     def __init__(self):
         self._running = False
@@ -41,6 +53,7 @@ class Loop:
             callable=callback,
             args=args)
         self._add_callback(callback)
+        return Handle(callback)
 
     # noinspection PyMethodMayBeStatic
     def time(self) -> float:
