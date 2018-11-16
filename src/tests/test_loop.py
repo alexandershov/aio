@@ -75,7 +75,7 @@ def test_add_done_callback(future, loop):
     results = []
     future.add_done_callback(lambda f: results.append(f.result()))
     future.add_done_callback(lambda f: loop.stop())
-    loop.call_soon(lambda: future.set_result(9))
+    loop.call_soon(future.set_result, 9)
     loop.run_forever()
     assert results == [9]
 
@@ -90,13 +90,13 @@ def test_remove_done_callback(future, loop):
     future.add_done_callback(add_result)
     future.add_done_callback(lambda f: loop.stop())
     assert future.remove_done_callback(add_result) == 2
-    loop.call_soon(lambda: future.set_result(9))
+    loop.call_soon(future.set_result, 9)
     loop.run_forever()
     assert results == []
 
 
 def test_run_until_complete(future, loop):
-    loop.call_soon(lambda: future.set_result(9))
+    loop.call_soon(future.set_result, 9)
     assert loop.run_until_complete(future) == 9
     assert future.result() == 9
 
