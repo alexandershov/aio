@@ -81,6 +81,7 @@ class Future(BaseFuture):
         if self.done():
             self._schedule_callbacks()
 
+    # TODO: move it to BaseFuture
     def remove_done_callback(self, callback) -> int:
         num_before = len(self._callbacks)
         new_callbacks = collections.deque()
