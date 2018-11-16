@@ -81,6 +81,16 @@ class Future(BaseFuture):
         if self.done():
             self._schedule_callbacks()
 
+    def remove_done_callback(self, callback) -> int:
+        num_before = len(self._callbacks)
+        new_callbacks = collections.deque()
+        for cur_callback in self._callbacks:
+            if cur_callback != callback:
+                new_callbacks.append(cur_callback)
+
+        self._callbacks = new_callbacks
+        return num_before - len(self._callbacks)
+
     def __await__(self):
         yield self
         return self.result()
