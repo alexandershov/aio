@@ -79,6 +79,7 @@ class Loop:
     def __init__(self):
         self._running = False
         self._pending_callbacks: tp.Deque[_Callback] = collections.deque()
+        # TODO: can _soon_callbacks and _delayed_callbacks be merged into a single attribute?
         self._soon_callbacks: tp.List[_Callback] = []
         self._delayed_callbacks: tp.List[_Callback] = []
         self._callbacks_counter = 0
