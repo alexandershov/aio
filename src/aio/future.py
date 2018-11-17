@@ -3,6 +3,7 @@ import collections
 import contextlib
 import logging
 
+from . import _errors
 from . import _loop
 
 logger = logging.getLogger(__name__)
@@ -55,6 +56,7 @@ class Future(BaseFuture):
         self._exception: Exception = _MISSING
         self._done = False
         self._callbacks = collections.deque()
+        self._cancelled = False
 
     def result(self) -> object:
         self._validate_done()
@@ -85,7 +87,6 @@ class Future(BaseFuture):
         if self.done():
             self._schedule_callbacks()
 
-    # TODO: move it to BaseFuture
     def remove_done_callback(self, callback) -> int:
         num_before = len(self._callbacks)
         new_callbacks = collections.deque()
@@ -95,6 +96,14 @@ class Future(BaseFuture):
 
         self._callbacks = new_callbacks
         return num_before - len(self._callbacks)
+
+    # TODO: move to BaseFuture
+    def cancel(self):
+        self.set_exception(_errors.CancelledError)
+        self._cancelled = True
+
+    def cancelled(self):
+        return self._cancelled
 
     def __await__(self):
         yield self

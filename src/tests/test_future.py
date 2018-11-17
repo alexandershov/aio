@@ -65,6 +65,11 @@ def test_exception_is_none_after_set_result(future):
     assert future.exception() is None
 
 
+def test_cancel(future):
+    future.cancel()
+    assert future.cancelled()
+
+
 @pytest.mark.parametrize('exception', [
     9,
     int,
