@@ -242,6 +242,7 @@ def test_new_event_loop():
 def test_set_event_loop():
     loop = aio.new_event_loop()
     aio.set_event_loop(loop)
+    assert aio.get_event_loop() is loop
     loop.call_soon(_Stopper(loop))
     loop.run_forever()
 
