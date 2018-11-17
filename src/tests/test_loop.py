@@ -2,7 +2,6 @@ import aio
 import pytest
 
 
-# TODO: use fresh loop in tests after set_event_loop is implemented
 def test_get_event_loop():
     assert aio.get_event_loop() is aio.get_event_loop()
 

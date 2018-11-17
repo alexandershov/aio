@@ -14,7 +14,8 @@ def future_fixture(request):
 @pytest.fixture(name='loop')
 def loop_fixture(request):
     del request  # unused
-    return aio.get_event_loop()
+    yield aio.get_event_loop()
+    aio.set_event_loop(None)
 
 
 @pytest.fixture(autouse=True, scope='session')
