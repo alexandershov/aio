@@ -175,7 +175,7 @@ def test_call_at_handle_when(loop):
 def test_call_later_handle_when(loop):
     now = loop.time()
     handle = loop.call_later(0.001, loop.stop)
-    assert handle.when() >= now + 0.001
+    assert handle.when() >= now + 0.0001
     loop.run_forever()
 
 
@@ -190,9 +190,9 @@ def test_cancel_call_soon(loop):
 
 def test_cancel_call_later(loop):
     calls = []
-    handle = loop.call_later(0.001, calls.append, 'first')
+    handle = loop.call_later(0.0001, calls.append, 'first')
     handle.cancel()
-    loop.call_later(0.001, _Stopper(loop))
+    loop.call_later(0.0001, _Stopper(loop))
     loop.run_forever()
     assert calls == []
 
@@ -200,9 +200,9 @@ def test_cancel_call_later(loop):
 def test_cancel_call_at(loop):
     calls = []
     now = loop.time()
-    handle = loop.call_at(now + 0.001, calls.append, 'first')
+    handle = loop.call_at(now + 0.0001, calls.append, 'first')
     handle.cancel()
-    loop.call_at(now + 0.001, _Stopper(loop))
+    loop.call_at(now + 0.0001, _Stopper(loop))
     loop.run_forever()
     assert calls == []
 
