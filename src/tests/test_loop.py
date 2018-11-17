@@ -172,6 +172,13 @@ def test_call_at_handle_when(loop):
     loop.run_forever()
 
 
+def test_call_later_handle_when(loop):
+    now = loop.time()
+    handle = loop.call_later(0.001, loop.stop)
+    assert handle.when() >= now + 0.001
+    loop.run_forever()
+
+
 def test_cancel_call_soon(loop):
     calls = []
     handle = loop.call_soon(calls.append, 'first')
