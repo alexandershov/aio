@@ -19,7 +19,7 @@ def test_call_soon(loop):
 
 def test_call_later(loop):
     calls = []
-    loop.call_later(0.0001, lambda: calls.append('first'))
+    loop.call_later(-0.0001, lambda: calls.append('first'))
     loop.call_later(0.0002, lambda: calls.append('second'))
     loop.call_later(0.0003, _Stopper(loop))
     loop.run_forever()
