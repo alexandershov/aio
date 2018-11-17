@@ -84,6 +84,7 @@ class Loop:
         when = self.time() + delay
         return self.call_at(when, callback, *args)
 
+    # TODO: return TimerHandle
     def call_at(self, when, callback, *args) -> Handle:
         callback = _Callback(
             when=when,
