@@ -222,6 +222,16 @@ def test_is_running_during_stopping(loop):
     loop.run_forever()
 
 
+def test_get_running_loop(loop):
+    loop.call_soon(lambda: _assert_is(aio.get_running_loop(), loop))
+    loop.call_soon(_Stopper(loop))
+    loop.run_forever()
+
+
+def _assert_is(x, y):
+    assert x is y
+
+
 def _assert_is_running(loop):
     assert loop.is_running()
 

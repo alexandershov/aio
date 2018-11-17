@@ -195,3 +195,7 @@ _loop = Loop()
 
 def get_event_loop() -> Loop:
     return _loop
+
+
+def get_running_loop() -> Loop:
+    return _loop
