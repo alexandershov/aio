@@ -70,12 +70,20 @@ def test_call_at_with_arguments(loop):
     assert calls == ['first']
 
 
-# TODO: test Task.add_done_callback
 def test_add_done_callback(future, loop):
     results = []
     future.add_done_callback(lambda f: results.append(f.result()))
     future.add_done_callback(lambda f: loop.stop())
     loop.call_soon(future.set_result, 9)
+    loop.run_forever()
+    assert results == [9]
+
+
+def test_task_add_done_callback(loop):
+    results = []
+    task = aio.Task(_coro_returning(9))
+    task.add_done_callback(lambda f: results.append(f.result()))
+    task.add_done_callback(lambda f: loop.stop())
     loop.run_forever()
     assert results == [9]
 
@@ -285,6 +293,10 @@ async def _sleep(duration):
 
 async def _coro_pass():
     pass
+
+
+async def _coro_returning(result):
+    return result
 
 
 class _Stopper:
