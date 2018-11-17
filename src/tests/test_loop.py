@@ -207,6 +207,10 @@ async def _sleep(duration):
     await future
 
 
+async def _coro_pass():
+    pass
+
+
 class _Stopper:
     def __init__(self, loop: aio.Loop):
         self._loop = loop
