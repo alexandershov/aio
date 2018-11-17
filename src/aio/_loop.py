@@ -143,14 +143,15 @@ class Loop:
     def _call_delayed_callbacks(self):
         now = self.time()
         callbacks = []
-        while True:
-            if not self._delayed_callbacks:
-                break
-            if self._delayed_callbacks[0].when > now:
-                break
+        while self._has_delayed_callback_to_call(now):
             a_callback = heapq.heappop(self._delayed_callbacks)
             callbacks.append(a_callback)
         self._call_callbacks(callbacks)
+
+    def _has_delayed_callback_to_call(self, now: float) -> bool:
+        if not self._delayed_callbacks:
+            return False
+        return self._delayed_callbacks[0].when <= now
 
     def _call_callbacks(self, callbacks: tp.Iterable[_Callback]) -> None:
         for a_callback in callbacks:
