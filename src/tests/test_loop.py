@@ -211,8 +211,9 @@ def test_stop_calls_ready_callbacks(loop):
     calls = []
     loop.call_soon(_Stopper(loop))
     loop.call_soon(calls.append, 'first')
+    loop.call_later(0, calls.append, 'second')
     loop.run_forever()
-    assert calls == ['first']
+    assert calls == ['first', 'second']
 
 
 def _always_raises(exception):
