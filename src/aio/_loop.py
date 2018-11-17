@@ -19,6 +19,7 @@ class _Callback:
             function: tp.Callable,
             args: tp.Tuple) -> None:
         self._when = when
+        # TODO: remove index
         self._index = index
         self._function = function
         self._args = args
@@ -74,11 +75,18 @@ class Handle:
 class Loop:
     def __init__(self):
         self._running = False
-        self._callbacks: tp.List[_Callback] = []
+        self._soon_callbacks: tp.List[_Callback] = []
+        self._delayed_callbacks: tp.List[_Callback] = []
         self._callbacks_counter = 0
 
     def call_soon(self, callback, *args) -> Handle:
-        return self.call_later(0, callback, *args)
+        callback = _Callback(
+            when=self.time(),
+            index=self._callbacks_counter,
+            function=callback,
+            args=args)
+        self._add_soon_callback(callback)
+        return Handle(callback)
 
     def call_later(self, delay, callback, *args) -> Handle:
         when = self.time() + delay
@@ -91,7 +99,7 @@ class Loop:
             index=self._callbacks_counter,
             function=callback,
             args=args)
-        self._add_callback(callback)
+        self._add_delayed_callback(callback)
         return Handle(callback)
 
     # noinspection PyMethodMayBeStatic
@@ -109,10 +117,12 @@ class Loop:
         logger.debug('Running %s forever', self)
         self._running = True
         while self._running:
-            if not self._callbacks:
+            if not self._has_callbacks():
                 time.sleep(1)
             else:
-                self._call_next_callback_or_wait()
+                self._call_soon_callbacks()
+                self._call_delayed_callbacks()
+                # TODO: add sleep
 
     def run_until_complete(self, future):
         logger.debug('Running %s until %s is complete', self, future)
@@ -125,26 +135,46 @@ class Loop:
             raise RuntimeError(f'Loop stopped before {future} completed')
         return future.result()
 
-    def _call_next_callback_or_wait(self):
-        callback = self._callbacks[0]
+    def _call_soon_callbacks(self):
+        callbacks = self._soon_callbacks
+        self._soon_callbacks = []
+        self._call_callbacks(callbacks)
+
+    def _call_delayed_callbacks(self):
         now = self.time()
-        if callback.when > now:
-            time.sleep(callback.when - now)
-        else:
-            callback = heapq.heappop(self._callbacks)
+        callbacks = []
+        while True:
+            if not self._delayed_callbacks:
+                break
+            if self._delayed_callbacks[0].when > now:
+                break
+            a_callback = heapq.heappop(self._delayed_callbacks)
+            callbacks.append(a_callback)
+        self._call_callbacks(callbacks)
+
+    def _call_callbacks(self, callbacks: tp.Iterable[_Callback]) -> None:
+        for a_callback in callbacks:
             # noinspection PyBroadException
             try:
-                callback()
+                a_callback()
             except Exception:
-                self._handle_callback_exception(callback)
+                self._handle_callback_exception(a_callback)
+
+    def _has_callbacks(self) -> bool:
+        return bool(self._soon_callbacks or self._delayed_callbacks)
 
     # noinspection PyMethodMayBeStatic
     def _handle_callback_exception(self, callback: _Callback) -> None:
         logger.error('Got an exception during handling of %s: ', callback, exc_info=True)
 
-    def _add_callback(self, callback: _Callback) -> None:
+    def _add_soon_callback(self, callback: _Callback) -> None:
         logger.debug('Adding %s to %s', callback, self)
-        heapq.heappush(self._callbacks, callback)
+        self._soon_callbacks.append(callback)
+        self._callbacks_counter += 1
+
+    def _add_delayed_callback(self, callback: _Callback) -> None:
+        logger.debug('Adding %s to %s', callback, self)
+        heapq.heappush(self._delayed_callbacks, callback)
         self._callbacks_counter += 1
 
     def __str__(self):
