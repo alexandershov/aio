@@ -157,11 +157,19 @@ def test_callback_exception(loop):
     assert not loop.is_running()
 
 
-def test_handle(loop):
+def test_call_soon_handle(loop):
     handle = loop.call_soon(loop.stop)
     assert not handle.cancelled()
     handle.cancel()
     assert handle.cancelled()
+
+
+def test_call_at_handle_when(loop):
+    now = loop.time()
+    when = now + 1
+    handle = loop.call_at(when, loop.stop)
+    assert handle.when() == when
+    loop.run_forever()
 
 
 def test_cancel_call_soon(loop):

@@ -67,6 +67,9 @@ class Handle:
     def cancelled(self) -> bool:
         return self._callback.cancelled()
 
+    def when(self) -> float:
+        return self._callback.when
+
 
 class Loop:
     def __init__(self):
