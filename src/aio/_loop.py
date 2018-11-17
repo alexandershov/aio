@@ -1,4 +1,3 @@
-import abc
 import functools
 import heapq
 import logging
@@ -59,17 +58,7 @@ class _Callback:
         return self._when, self._index
 
 
-class BaseHandle(metaclass=abc.ABCMeta):
-    @abc.abstractmethod
-    def cancel(self) -> None:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def cancelled(self) -> bool:
-        raise NotImplementedError
-
-
-class Handle(BaseHandle):
+class Handle:
     def __init__(self, callback: _Callback) -> None:
         self._callback = callback
 
@@ -80,16 +69,7 @@ class Handle(BaseHandle):
         return self._callback.cancelled()
 
 
-class TimerHandle(BaseHandle):
-    def __init__(self, callback: _Callback) -> None:
-        self._callback = callback
-
-    def cancel(self) -> None:
-        self._callback.cancel()
-
-    def cancelled(self) -> bool:
-        return self._callback.cancelled()
-
+class TimerHandle(Handle):
     def when(self) -> float:
         return self._callback.when
 
