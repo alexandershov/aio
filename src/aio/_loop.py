@@ -190,10 +190,12 @@ class Loop:
         return f'<Loop {state}>'
 
 
-_loop = Loop()
+_loop: Loop = None
 
 
 def get_event_loop() -> Loop:
+    if _loop is None:
+        set_event_loop(new_event_loop())
     return _loop
 
 
@@ -207,6 +209,8 @@ def set_event_loop(loop: Loop) -> None:
 
 
 def get_running_loop() -> Loop:
+    if _loop is None:
+        raise RuntimeError('No running loop')
     if not _loop.is_running():
         raise RuntimeError('No running loop')
     return _loop
