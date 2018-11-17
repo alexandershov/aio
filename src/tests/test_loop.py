@@ -96,6 +96,20 @@ def test_future_remove_done_callback(future, loop):
     assert results == []
 
 
+def test_task_remove_done_callback(loop):
+    results = []
+
+    def add_result(f):
+        results.append(f.result())
+
+    task = aio.Task(_coro_pass())
+    task.add_done_callback(add_result)
+    task.add_done_callback(add_result)
+    assert task.remove_done_callback(add_result) == 2
+    loop.run_until_complete(task)
+    assert results == []
+
+
 def test_run_until_complete(future, loop):
     loop.call_soon(future.set_result, 9)
     assert loop.run_until_complete(future) == 9

@@ -40,6 +40,9 @@ class Task(aio.future.BaseFuture):
     def add_done_callback(self, callback) -> None:
         self._future.add_done_callback(callback)
 
+    def remove_done_callback(self, callback) -> int:
+        return self._future.remove_done_callback(callback)
+
     def _run(self):
         self._state = 'running'
         logger.debug('Running %s', self)

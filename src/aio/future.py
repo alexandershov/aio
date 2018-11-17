@@ -44,6 +44,10 @@ class BaseFuture(metaclass=abc.ABCMeta):
     def add_done_callback(self, callback) -> None:
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def remove_done_callback(self, callback) -> int:
+        raise NotImplementedError
+
 
 class Future(BaseFuture):
     def __init__(self):
