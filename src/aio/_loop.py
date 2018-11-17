@@ -1,3 +1,4 @@
+import abc
 import functools
 import heapq
 import logging
@@ -58,7 +59,17 @@ class _Callback:
         return self._when, self._index
 
 
-class Handle:
+class BaseHandle(metaclass=abc.ABCMeta):
+    @abc.abstractmethod
+    def cancel(self) -> None:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def cancelled(self) -> bool:
+        raise NotImplementedError
+
+
+class Handle(BaseHandle):
     def __init__(self, callback: _Callback) -> None:
         self._callback = callback
 
