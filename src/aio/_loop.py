@@ -79,6 +79,17 @@ class Handle(BaseHandle):
     def cancelled(self) -> bool:
         return self._callback.cancelled()
 
+
+class TimerHandle(BaseHandle):
+    def __init__(self, callback: _Callback) -> None:
+        self._callback = callback
+
+    def cancel(self) -> None:
+        self._callback.cancel()
+
+    def cancelled(self) -> bool:
+        return self._callback.cancelled()
+
     def when(self) -> float:
         return self._callback.when
 
@@ -99,19 +110,18 @@ class Loop:
         self._add_soon_callback(callback)
         return Handle(callback)
 
-    def call_later(self, delay, callback, *args) -> Handle:
+    def call_later(self, delay, callback, *args) -> TimerHandle:
         when = self.time() + delay
         return self.call_at(when, callback, *args)
 
-    # TODO: return TimerHandle
-    def call_at(self, when, callback, *args) -> Handle:
+    def call_at(self, when, callback, *args) -> TimerHandle:
         callback = _Callback(
             when=when,
             index=self._callbacks_counter,
             function=callback,
             args=args)
         self._add_delayed_callback(callback)
-        return Handle(callback)
+        return TimerHandle(callback)
 
     # noinspection PyMethodMayBeStatic
     def time(self) -> float:
