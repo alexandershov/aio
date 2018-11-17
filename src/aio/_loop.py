@@ -121,9 +121,12 @@ class Loop:
             if not self._has_callbacks():
                 time.sleep(1)
             else:
-                self._call_soon_callbacks()
-                self._call_delayed_callbacks()
+                self._call_ready_callbacks()
                 # TODO: add sleep
+
+    def _call_ready_callbacks(self):
+        self._call_soon_callbacks()
+        self._call_delayed_callbacks()
 
     def run_until_complete(self, future):
         logger.debug('Running %s until %s is complete', self, future)
