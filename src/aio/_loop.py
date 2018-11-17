@@ -198,4 +198,6 @@ def get_event_loop() -> Loop:
 
 
 def get_running_loop() -> Loop:
+    if not _loop.is_running():
+        raise RuntimeError('No running loop')
     return _loop

@@ -228,6 +228,11 @@ def test_get_running_loop(loop):
     loop.run_forever()
 
 
+def test_get_running_loop_while_no_loop_is_running(loop):
+    with pytest.raises(RuntimeError):
+        aio.get_running_loop()
+
+
 def _assert_is(x, y):
     assert x is y
 
