@@ -80,7 +80,7 @@ def test_add_done_callback(future, loop):
     assert results == [9]
 
 
-def test_remove_done_callback(future, loop):
+def test_future_remove_done_callback(future, loop):
     results = []
 
     def add_result(f):
