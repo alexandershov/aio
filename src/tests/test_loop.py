@@ -228,9 +228,15 @@ def test_get_running_loop(loop):
     loop.run_forever()
 
 
-def test_get_running_loop_while_no_loop_is_running(loop):
+def test_get_running_loop_while_no_loop_is_running():
     with pytest.raises(RuntimeError):
         aio.get_running_loop()
+
+
+def test_new_event_loop():
+    x = aio.new_event_loop()
+    y = aio.new_event_loop()
+    assert x != y
 
 
 def _assert_is(x, y):
