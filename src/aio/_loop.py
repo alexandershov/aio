@@ -111,6 +111,7 @@ class Loop:
 
     def stop(self) -> None:
         logger.debug('Stopping %s', self)
+        self._call_pending_callbacks()
         self._running = False
 
     def is_running(self) -> bool:

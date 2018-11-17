@@ -216,6 +216,16 @@ def test_stop_calls_ready_callbacks(loop):
     assert calls == ['first', 'second']
 
 
+def test_is_running_during_stopping(loop):
+    loop.call_soon(_Stopper(loop))
+    loop.call_soon(_assert_is_running, loop)
+    loop.run_forever()
+
+
+def _assert_is_running(loop):
+    assert loop.is_running()
+
+
 def _always_raises(exception):
     raise exception
 
