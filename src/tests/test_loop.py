@@ -166,7 +166,7 @@ def test_call_soon_handle(loop):
 
 def test_call_at_handle_when(loop):
     now = loop.time()
-    when = now + 1
+    when = now + 0.001
     handle = loop.call_at(when, loop.stop)
     assert handle.when() == when
     loop.run_forever()
