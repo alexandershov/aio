@@ -73,3 +73,11 @@ def test_invalid_exception_in_set_exception(future, exception):
     with pytest.raises(TypeError):
         future.set_exception(exception)
     assert not future.done()
+
+
+def test_remove_non_existing_done_callback(future):
+    assert future.remove_done_callback(_do_nothing_callback) == 0
+
+
+def _do_nothing_callback(future):
+    del future  # unused
