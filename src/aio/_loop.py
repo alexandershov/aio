@@ -1,3 +1,4 @@
+import collections
 import functools
 import heapq
 import logging
@@ -77,6 +78,7 @@ class TimerHandle(Handle):
 class Loop:
     def __init__(self):
         self._running = False
+        self._pending_callbacks: tp.Deque[_Callback] = collections.deque()
         self._soon_callbacks: tp.List[_Callback] = []
         self._delayed_callbacks: tp.List[_Callback] = []
         self._callbacks_counter = 0
@@ -121,12 +123,23 @@ class Loop:
             if not self._has_callbacks():
                 time.sleep(1)
             else:
-                self._call_ready_callbacks()
+                self._prepare_pending_callbacks()
+                self._call_pending_callbacks()
                 # TODO: add sleep
 
-    def _call_ready_callbacks(self):
-        self._call_soon_callbacks()
-        self._call_delayed_callbacks()
+    def _prepare_pending_callbacks(self):
+        assert not self._pending_callbacks
+        self._prepare_soon_pending_callbacks()
+        self._prepared_delayed_pending_callbacks()
+
+    def _call_pending_callbacks(self):
+        while self._pending_callbacks:
+            callback = self._pending_callbacks.popleft()
+            # noinspection PyBroadException
+            try:
+                callback()
+            except Exception:
+                self._handle_callback_exception(callback)
 
     def run_until_complete(self, future):
         logger.debug('Running %s until %s is complete', self, future)
@@ -139,31 +152,20 @@ class Loop:
             raise RuntimeError(f'Loop stopped before {future} completed')
         return future.result()
 
-    def _call_soon_callbacks(self):
-        callbacks = self._soon_callbacks
+    def _prepare_soon_pending_callbacks(self):
+        self._pending_callbacks.extend(self._soon_callbacks)
         self._soon_callbacks = []
-        self._call_callbacks(callbacks)
 
-    def _call_delayed_callbacks(self):
+    def _prepared_delayed_pending_callbacks(self):
         now = self.time()
-        callbacks = []
         while self._has_delayed_callback_to_call(now):
             a_callback = heapq.heappop(self._delayed_callbacks)
-            callbacks.append(a_callback)
-        self._call_callbacks(callbacks)
+            self._pending_callbacks.append(a_callback)
 
     def _has_delayed_callback_to_call(self, now: float) -> bool:
         if not self._delayed_callbacks:
             return False
         return self._delayed_callbacks[0].when <= now
-
-    def _call_callbacks(self, callbacks: tp.Iterable[_Callback]) -> None:
-        for a_callback in callbacks:
-            # noinspection PyBroadException
-            try:
-                a_callback()
-            except Exception:
-                self._handle_callback_exception(a_callback)
 
     def _has_callbacks(self) -> bool:
         return bool(self._soon_callbacks or self._delayed_callbacks)
