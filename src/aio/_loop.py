@@ -201,6 +201,11 @@ def new_event_loop() -> Loop:
     return Loop()
 
 
+def set_event_loop(loop: Loop) -> None:
+    global _loop
+    _loop = loop
+
+
 def get_running_loop() -> Loop:
     if not _loop.is_running():
         raise RuntimeError('No running loop')

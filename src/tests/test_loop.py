@@ -239,6 +239,13 @@ def test_new_event_loop():
     assert x != y
 
 
+def test_set_event_loop():
+    loop = aio.new_event_loop()
+    aio.set_event_loop(loop)
+    loop.call_soon(_Stopper(loop))
+    loop.run_forever()
+
+
 def _assert_is(x, y):
     assert x is y
 
