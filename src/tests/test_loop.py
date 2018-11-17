@@ -70,7 +70,7 @@ def test_call_at_with_arguments(loop):
     assert calls == ['first']
 
 
-def test_add_done_callback(future, loop):
+def test_future_add_done_callback(future, loop):
     results = []
     future.add_done_callback(lambda f: results.append(f.result()))
     future.add_done_callback(lambda f: loop.stop())
