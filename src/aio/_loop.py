@@ -86,6 +86,7 @@ class Loop:
         self._delayed_callbacks: tp.List[_Callback] = []
         self._callbacks_counter = 0
         self._current_task = None
+        self._all_tasks = set()
 
     def call_soon(self, callback, *args) -> Handle:
         self._validate_is_not_closed()
@@ -176,6 +177,13 @@ class Loop:
     def set_current_task(self, task):
         self._current_task = task
 
+    def all_tasks(self):
+        return self._all_tasks
+
+    def add_task(self, task):
+        self._all_tasks.add(task)
+        task.add_done_callback(lambda _: self._all_tasks.remove(task))
+
     def _validate_is_not_closed(self):
         if self.is_closed():
             raise RuntimeError('Event loop is closed')
@@ -262,3 +270,9 @@ def current_task(loop=None):
     if loop is None:
         loop = get_running_loop()
     return loop.current_task()
+
+
+def all_tasks(loop=None):
+    if loop is None:
+        loop = get_running_loop()
+    return loop.all_tasks()

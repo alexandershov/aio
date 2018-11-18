@@ -25,6 +25,7 @@ class Task(aio.future.BaseFuture):
         self._cancelling = False
         self._aio_future_blocking = None
         self._loop = aio.get_event_loop()
+        self._loop.add_task(self)
         self._loop.call_soon(self._run)
         logger.debug('Created %s', self)
 

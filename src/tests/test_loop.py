@@ -375,6 +375,17 @@ def test_current_task_on_explicit_non_running_loop(loop):
     assert aio.current_task(loop) is None
 
 
+def test_all_tasks(loop):
+    tasks = []
+    task = aio.Task(_coro_append_all_tasks(tasks))
+    loop.run_until_complete(task)
+    assert tasks == [{task}]
+
+
+async def _coro_append_all_tasks(tasks):
+    tasks.append(set(aio.all_tasks()))
+
+
 async def _coro_return_current_task():
     return aio.current_task()
 

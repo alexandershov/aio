@@ -5,6 +5,7 @@ from ._loop import get_event_loop
 from ._loop import get_running_loop
 from ._loop import run
 from ._loop import current_task
+from ._loop import all_tasks
 from ._loop import new_event_loop
 from ._loop import set_event_loop
 from ._loop import Loop
