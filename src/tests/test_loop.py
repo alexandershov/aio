@@ -348,6 +348,11 @@ def test_task_get_loop(loop):
     coro.close()
 
 
+def test_future_get_loop(loop):
+    future = aio.Future()
+    assert future.get_loop() is loop
+
+
 async def _coro_close_running_loop():
     aio.get_running_loop().close()
 

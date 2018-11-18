@@ -65,6 +65,7 @@ class Future(BaseFuture):
         self._done = False
         self._callbacks = collections.deque()
         self._cancelled = False
+        self._loop = _loop.get_event_loop()
 
     def result(self) -> object:
         self._validate_done()
@@ -114,6 +115,9 @@ class Future(BaseFuture):
 
     def cancelled(self) -> bool:
         return self._cancelled
+
+    def get_loop(self) -> _loop.Loop:
+        return self._loop
 
     def __await__(self):
         yield self
