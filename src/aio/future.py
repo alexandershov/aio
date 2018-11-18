@@ -129,9 +129,8 @@ class Future(BaseFuture):
 
     def _schedule_callbacks(self):
         logger.debug('Scheduling callbacks for %s', self)
-        loop = _loop.get_event_loop()
         while self._callbacks:
-            loop.call_soon(self._callbacks.popleft(), self)
+            self._loop.call_soon(self._callbacks.popleft(), self)
 
     def _validate_not_done(self):
         if self.done():
