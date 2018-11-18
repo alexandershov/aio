@@ -68,6 +68,7 @@ def test_exception_is_none_after_set_result(future):
 def test_cancel(future):
     assert future.cancel() is True
     assert future.cancelled()
+    assert future.done()
     assert isinstance(future.exception(), aio.CancelledError)
     with pytest.raises(aio.CancelledError):
         future.result()
