@@ -191,11 +191,12 @@ class Loop:
         return f'<Loop {state}>'
 
 
-_loop: Loop = None
+_MISSING = object()
+_loop: Loop = _MISSING
 
 
 def get_event_loop() -> Loop:
-    if _loop is None:
+    if _loop is _MISSING:
         set_event_loop(new_event_loop())
     return _loop
 
@@ -210,7 +211,7 @@ def set_event_loop(loop: tp.Optional[Loop]) -> None:
 
 
 def get_running_loop() -> Loop:
-    if _loop is None:
+    if (_loop is None) or (_loop is _MISSING):
         raise RuntimeError('No running loop')
     if not _loop.is_running():
         raise RuntimeError('No running loop')
