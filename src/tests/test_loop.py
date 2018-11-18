@@ -70,7 +70,7 @@ def test_call_at_with_arguments(loop):
     assert calls == ['first']
 
 
-def test_future_add_done_callback(future, loop):
+def test_future_add_done_callback(loop, future):
     results = []
     future.add_done_callback(lambda f: results.append(f.result()))
     future.add_done_callback(lambda f: loop.stop())
@@ -88,7 +88,7 @@ def test_task_add_done_callback(loop):
     assert results == [9]
 
 
-def test_future_remove_done_callback(future, loop):
+def test_future_remove_done_callback(loop, future):
     results = []
 
     def add_result(f):
@@ -117,13 +117,13 @@ def test_task_remove_done_callback(loop):
     assert results == []
 
 
-def test_run_until_complete(future, loop):
+def test_run_until_complete(loop, future):
     loop.call_soon(future.set_result, 9)
     assert loop.run_until_complete(future) == 9
     assert future.result() == 9
 
 
-def test_run_until_complete_with_forever_pending_future(future, loop):
+def test_run_until_complete_with_forever_pending_future(loop, future):
     loop.call_soon(loop.stop)
     with pytest.raises(RuntimeError):
         loop.run_until_complete(future)
@@ -145,13 +145,13 @@ def test_nested_coroutine(loop):
     assert loop.run_until_complete(_coro_add(1, 2)) == 3
 
 
-def test_coroutine_with_failed_future(future, loop):
+def test_coroutine_with_failed_future(loop, future):
     loop.call_soon(future.set_exception, ZeroDivisionError)
     exc = loop.run_until_complete(_wait_and_catch(future))
     assert isinstance(exc, ZeroDivisionError)
 
 
-def test_coroutine_with_done_future(future, loop):
+def test_coroutine_with_done_future(loop, future):
     loop.call_soon(future.set_result, 9)
     result = loop.run_until_complete(_wait_and_catch(future))
     assert result == 9
@@ -276,7 +276,7 @@ def test_cancel_task_blocking_on_future(loop):
     assert loop.run_until_complete(task) == -9
 
 
-def test_cancel_task_cancels_future_blocking(future, loop):
+def test_cancel_task_cancels_future_blocking(loop, future):
     task = aio.Task(_wait(future))
     loop.call_soon(task.cancel)
     with pytest.raises(aio.CancelledError):
@@ -307,7 +307,7 @@ def test_cant_run_forever_after_close(loop):
     _restore_event_loop()
 
 
-def test_cant_run_until_complete_after_close(future, loop):
+def test_cant_run_until_complete_after_close(loop, future):
     loop.close()
     with pytest.raises(RuntimeError):
         loop.run_until_complete(future)
