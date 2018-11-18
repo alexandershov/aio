@@ -358,6 +358,14 @@ def test_current_task(loop):
     assert loop.run_until_complete(task) is task
 
 
+def test_current_task_in_call_soon(loop):
+    tasks = []
+    loop.call_soon(lambda: tasks.append(aio.current_task()))
+    loop.call_soon(_Stopper(loop))
+    loop.run_forever()
+    assert tasks == [None]
+
+
 async def _coro_return_current_task():
     return aio.current_task()
 
