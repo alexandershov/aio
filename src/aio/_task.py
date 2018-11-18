@@ -75,7 +75,6 @@ class Task(aio.future.BaseFuture):
             self._future.set_result(exc.value)
         except aio.CancelledError:
             self._state = 'cancelled'
-            # TODO: I've lost traceback here
             self._future.cancel()
         except _WaitForCancel:
             pass
