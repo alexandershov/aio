@@ -70,6 +70,12 @@ def test_cancel(future):
     assert future.cancelled()
 
 
+def test_cancel_twice(future):
+    future.cancel()
+    assert future.cancel() is False
+    assert future.cancelled()
+
+
 @pytest.mark.parametrize('exception', [
     9,
     int,
