@@ -18,6 +18,7 @@ class Task(aio.future.BaseFuture):
         self._coro = coro
         self._state = 'pending'
         self._future = aio.Future()
+        self._cancelling = False
         loop = aio.get_event_loop()
         loop.call_soon(self._run)
         logger.debug('Created %s', self)
@@ -47,22 +48,24 @@ class Task(aio.future.BaseFuture):
         # TODO: if I wait on Future, then call cancel() on this future
         if self.done():
             return False
-        self._run(throw=aio.CancelledError)
+        self._cancelling = True
+        loop = aio.get_event_loop()
+        loop.call_soon(self._run)
 
     def cancelled(self) -> bool:
         return self._future.cancelled()
 
-    def _run(self, throw=None):
+    def _run(self):
         if self.done():
             logger.debug('%s is done, nothing to run', self)
             return
         self._state = 'running'
         logger.debug('Running %s', self)
         try:
-            if throw is None:
-                future = self._coro.send(None)
+            if self._cancelling:
+                future = self._coro.throw(aio.CancelledError)
             else:
-                future = self._coro.throw(throw)
+                future = self._coro.send(None)
         except StopIteration as exc:
             self._state = 'done'
             self._future.set_result(exc.value)
