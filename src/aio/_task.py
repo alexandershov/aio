@@ -45,7 +45,12 @@ class Task(aio.future.BaseFuture):
 
     def cancel(self):
         # TODO: if I wait on Future, then call cancel() on this future
+        if self.done():
+            return False
         self._run(throw=aio.CancelledError)
+
+    def cancelled(self) -> bool:
+        return self._future.cancelled()
 
     def _run(self, throw=None):
         if self.done():
@@ -61,6 +66,10 @@ class Task(aio.future.BaseFuture):
         except StopIteration as exc:
             self._state = 'done'
             self._future.set_result(exc.value)
+        except aio.CancelledError:
+            self._state = 'cancelled'
+            # TODO: I've lost traceback here
+            self._future.cancel()
         except Exception as exc:
             self._state = 'done'
             self._future.set_exception(exc)
