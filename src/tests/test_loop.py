@@ -353,6 +353,15 @@ def test_future_get_loop(loop):
     assert future.get_loop() is loop
 
 
+def test_current_task(loop):
+    task = aio.Task(_coro_return_current_task())
+    assert loop.run_until_complete(task) is task
+
+
+async def _coro_return_current_task():
+    return aio.current_task()
+
+
 async def _coro_close_running_loop():
     aio.get_running_loop().close()
 

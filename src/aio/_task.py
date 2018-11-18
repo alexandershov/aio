@@ -66,6 +66,7 @@ class Task(aio.future.BaseFuture):
         if self.done():
             logger.debug('%s is done, nothing to run', self)
             return
+        self.get_loop().set_current_task(self)
         self._state = 'running'
         logger.debug('Running %s', self)
         try:
@@ -88,6 +89,7 @@ class Task(aio.future.BaseFuture):
             future.add_done_callback(lambda _: self._run())
         if self._cancelling:
             self._cancelling = False
+        self.get_loop().set_current_task(None)
 
     def _continue_coro(self):
         if self._cancelling:
