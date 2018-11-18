@@ -371,6 +371,10 @@ def test_current_task_on_not_running_loop():
         aio.current_task()
 
 
+def test_current_task_on_explicit_non_running_loop(loop):
+    assert aio.current_task(loop) is None
+
+
 async def _coro_return_current_task():
     return aio.current_task()
 

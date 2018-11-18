@@ -171,15 +171,10 @@ class Loop:
         return self._is_closed
 
     def current_task(self):
-        self._validate_is_running()
         return self._current_task
 
     def set_current_task(self, task):
         self._current_task = task
-
-    def _validate_is_running(self):
-        if not self.is_running():
-            raise RuntimeError('Event loop is not running')
 
     def _validate_is_not_closed(self):
         if self.is_closed():
