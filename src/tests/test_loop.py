@@ -254,6 +254,13 @@ def test_set_event_loop():
     loop.run_forever()
 
 
+def test_get_event_loop_after_unset():
+    aio.set_event_loop(None)
+    with pytest.raises(RuntimeError):
+        aio.get_event_loop()
+    aio.set_event_loop(aio.new_event_loop())
+
+
 def _assert_is(x, y):
     assert x is y
 

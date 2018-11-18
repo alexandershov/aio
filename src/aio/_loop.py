@@ -196,6 +196,8 @@ _loop: Loop = _MISSING
 
 
 def get_event_loop() -> Loop:
+    if _loop is None:
+        raise RuntimeError('Event loop is unset for this context')
     if _loop is _MISSING:
         set_event_loop(new_event_loop())
     return _loop
