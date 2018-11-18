@@ -366,6 +366,11 @@ def test_current_task_in_call_soon(loop):
     assert tasks == [None]
 
 
+def test_current_task_on_not_running_loop():
+    with pytest.raises(RuntimeError):
+        aio.current_task()
+
+
 async def _coro_return_current_task():
     return aio.current_task()
 
