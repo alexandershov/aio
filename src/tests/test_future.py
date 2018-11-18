@@ -66,7 +66,7 @@ def test_exception_is_none_after_set_result(future):
 
 
 def test_cancel(future):
-    future.cancel()
+    assert future.cancel() is True
     assert future.cancelled()
 
 

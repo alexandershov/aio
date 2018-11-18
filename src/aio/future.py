@@ -99,8 +99,11 @@ class Future(BaseFuture):
 
     # TODO: move to BaseFuture
     def cancel(self):
+        if self.cancelled():
+            return False
         self.set_exception(_errors.CancelledError)
         self._cancelled = True
+        return True
 
     def cancelled(self):
         return self._cancelled
