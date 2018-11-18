@@ -343,7 +343,7 @@ def test_cant_close_running_loop():
 
 def test_task_get_loop(loop):
     coro = _coro_pass()
-    task = aio.Task(_coro_pass())
+    task = aio.Task(coro)
     assert task.get_loop() is loop
     coro.close()
 
