@@ -307,6 +307,13 @@ def test_cant_run_forever_after_close(loop):
     _restore_event_loop()
 
 
+def test_cant_run_until_complete_after_close(future, loop):
+    loop.close()
+    with pytest.raises(RuntimeError):
+        loop.run_until_complete(future)
+    _restore_event_loop()
+
+
 def _restore_event_loop():
     aio.set_event_loop(aio.new_event_loop())
 

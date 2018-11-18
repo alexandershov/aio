@@ -147,6 +147,7 @@ class Loop:
                 self._handle_callback_exception(callback)
 
     def run_until_complete(self, future):
+        self._validate_is_not_closed()
         logger.debug('Running %s until %s is complete', self, future)
         future = aio.ensure_future(future)
         future.add_done_callback(lambda _: self.stop())
@@ -165,7 +166,7 @@ class Loop:
 
     def _validate_is_not_closed(self):
         if self.is_closed():
-            raise RuntimeError('Can\'t run closed loop')
+            raise RuntimeError('Event loop is closed')
 
     def _prepare_soon_pending_callbacks(self):
         self._pending_callbacks.extend(self._soon_callbacks)
