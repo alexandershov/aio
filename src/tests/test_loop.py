@@ -270,6 +270,15 @@ def test_cancel_task(loop):
     assert task.cancel() is False
 
 
+async def _coro_ignoring_cancelled_error():
+    try:
+        await _sleep(0.0001)
+    except aio.CancelledError:
+        return -9
+    else:
+        return 9
+
+
 def _assert_is(x, y):
     assert x is y
 
