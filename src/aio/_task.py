@@ -49,7 +49,7 @@ class Task(aio.future.BaseFuture):
     def remove_done_callback(self, callback) -> int:
         return self._future.remove_done_callback(callback)
 
-    def cancel(self):
+    def cancel(self) -> bool:
         if self.done():
             return False
         self._cancelling = True

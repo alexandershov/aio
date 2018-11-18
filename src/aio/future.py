@@ -49,6 +49,14 @@ class BaseFuture(metaclass=abc.ABCMeta):
     def remove_done_callback(self, callback) -> int:
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def cancel(self) -> bool:
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def cancelled(self) -> bool:
+        raise NotImplementedError
+
 
 class Future(BaseFuture):
     def __init__(self):
@@ -97,15 +105,14 @@ class Future(BaseFuture):
         self._callbacks = new_callbacks
         return num_before - len(self._callbacks)
 
-    # TODO: move to BaseFuture
-    def cancel(self):
+    def cancel(self) -> bool:
         if self.done():
             return False
         self.set_exception(_errors.CancelledError)
         self._cancelled = True
         return True
 
-    def cancelled(self):
+    def cancelled(self) -> bool:
         return self._cancelled
 
     def __await__(self):
