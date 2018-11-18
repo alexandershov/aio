@@ -286,18 +286,29 @@ def test_cancel_task_cancels_future_blocking(future, loop):
 
 def test_run():
     assert aio.run(_coro_returning(9)) == 9
-    aio.set_event_loop(aio.new_event_loop())
+    _restore_event_loop()
 
 
 def test_run_future(future):
     with pytest.raises(ValueError):
         aio.run(future)
-    aio.set_event_loop(aio.new_event_loop())
+    _restore_event_loop()
 
 
 def test_close(loop):
     loop.close()
     assert loop.is_closed()
+
+
+def test_cant_run_forever_after_close(loop):
+    loop.close()
+    with pytest.raises(RuntimeError):
+        loop.run_forever()
+    _restore_event_loop()
+
+
+def _restore_event_loop():
+    aio.set_event_loop(aio.new_event_loop())
 
 
 async def _coro_ignoring_cancelled_error():

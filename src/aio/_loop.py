@@ -121,6 +121,7 @@ class Loop:
         return self._running
 
     def run_forever(self) -> None:
+        self._validate_is_not_closed()
         logger.debug('Running %s forever', self)
         self._running = True
         while self._running:
@@ -161,6 +162,10 @@ class Loop:
 
     def is_closed(self) -> bool:
         return self._is_closed
+
+    def _validate_is_not_closed(self):
+        if self.is_closed():
+            raise RuntimeError('Can\'t run closed loop')
 
     def _prepare_soon_pending_callbacks(self):
         self._pending_callbacks.extend(self._soon_callbacks)
