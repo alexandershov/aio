@@ -261,6 +261,13 @@ def test_get_event_loop_after_unset():
     aio.set_event_loop(aio.new_event_loop())
 
 
+def test_cancel_task(loop):
+    loop.call_soon(lambda: task.cancel())
+    task = aio.Task(_coro_pass())
+    with pytest.raises(aio.CancelledError):
+        loop.run_until_complete(task)
+
+
 def _assert_is(x, y):
     assert x is y
 

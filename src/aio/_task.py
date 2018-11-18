@@ -43,11 +43,21 @@ class Task(aio.future.BaseFuture):
     def remove_done_callback(self, callback) -> int:
         return self._future.remove_done_callback(callback)
 
-    def _run(self):
+    def cancel(self):
+        # TODO: if I wait on Future, then call cancel() on this future
+        self._run(throw=aio.CancelledError)
+
+    def _run(self, throw=None):
+        if self.done():
+            logger.debug('%s is done, nothing to run', self)
+            return
         self._state = 'running'
         logger.debug('Running %s', self)
         try:
-            future = self._coro.send(None)
+            if throw is None:
+                future = self._coro.send(None)
+            else:
+                future = self._coro.throw(throw)
         except StopIteration as exc:
             self._state = 'done'
             self._future.set_result(exc.value)
