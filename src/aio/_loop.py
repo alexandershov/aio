@@ -87,6 +87,7 @@ class Loop:
         self._callbacks_counter = 0
 
     def call_soon(self, callback, *args) -> Handle:
+        self._validate_is_not_closed()
         callback = _Callback(
             when=self.time(),
             index=self._callbacks_counter,
