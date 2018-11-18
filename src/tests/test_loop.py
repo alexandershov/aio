@@ -267,6 +267,7 @@ def test_cancel_task(loop):
     with pytest.raises(aio.CancelledError):
         loop.run_until_complete(task)
     assert task.cancelled()
+    assert task.cancel() is False
 
 
 def _assert_is(x, y):
