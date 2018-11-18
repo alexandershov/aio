@@ -57,6 +57,10 @@ class BaseFuture(metaclass=abc.ABCMeta):
     def cancelled(self) -> bool:
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def get_loop(self) -> _loop.Loop:
+        raise NotImplementedError
+
 
 class Future(BaseFuture):
     def __init__(self):
