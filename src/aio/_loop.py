@@ -97,6 +97,7 @@ class Loop:
         return Handle(callback)
 
     def call_later(self, delay, callback, *args) -> TimerHandle:
+        self._validate_is_not_closed()
         when = self.time() + delay
         return self.call_at(when, callback, *args)
 
