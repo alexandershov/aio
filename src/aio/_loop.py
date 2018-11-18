@@ -1,6 +1,7 @@
 import collections
 import functools
 import heapq
+import inspect
 import logging
 import time
 import typing as tp
@@ -218,3 +219,15 @@ def get_running_loop() -> Loop:
     if not _loop.is_running():
         raise RuntimeError('No running loop')
     return _loop
+
+
+def run(coro):
+    if not inspect.iscoroutine(coro):
+        raise ValueError(f'{coro!r} is not a coroutine')
+    loop = new_event_loop()
+    set_event_loop(loop)
+    try:
+        return loop.run_until_complete(coro)
+    finally:
+        # TODO: close loop
+        set_event_loop(None)
