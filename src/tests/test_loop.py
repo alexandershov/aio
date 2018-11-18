@@ -289,6 +289,12 @@ def test_run():
     aio.set_event_loop(aio.new_event_loop())
 
 
+def test_run_future(future):
+    with pytest.raises(ValueError):
+        aio.run(future)
+    aio.set_event_loop(aio.new_event_loop())
+
+
 async def _coro_ignoring_cancelled_error():
     try:
         await _sleep(0.0001)
