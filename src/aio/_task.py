@@ -50,7 +50,6 @@ class Task(aio.future.BaseFuture):
         return self._future.remove_done_callback(callback)
 
     def cancel(self):
-        # TODO: if I wait on Future, then call cancel() on this future
         if self.done():
             return False
         self._cancelling = True
