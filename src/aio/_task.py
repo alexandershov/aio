@@ -24,8 +24,8 @@ class Task(aio.future.BaseFuture):
         self._future = aio.Future()
         self._cancelling = False
         self._aio_future_blocking = None
-        loop = aio.get_event_loop()
-        loop.call_soon(self._run)
+        self._loop = aio.get_event_loop()
+        self._loop.call_soon(self._run)
         logger.debug('Created %s', self)
 
     def result(self) -> object:
@@ -53,12 +53,14 @@ class Task(aio.future.BaseFuture):
         if self.done():
             return False
         self._cancelling = True
-        loop = aio.get_event_loop()
-        loop.call_soon(self._run)
+        self._loop.call_soon(self._run)
         return True
 
     def cancelled(self) -> bool:
         return self._future.cancelled()
+
+    def get_loop(self) -> aio.Loop:
+        return self._loop
 
     def _run(self):
         if self.done():

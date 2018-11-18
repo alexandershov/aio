@@ -341,6 +341,13 @@ def test_cant_close_running_loop():
     _restore_event_loop()
 
 
+def test_task_get_loop(loop):
+    coro = _coro_pass()
+    t = aio.Task(_coro_pass())
+    assert t.get_loop() is loop
+    coro.close()
+
+
 async def _coro_close_running_loop():
     aio.get_running_loop().close()
 
