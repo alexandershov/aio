@@ -335,6 +335,16 @@ def test_cant_run_call_at_after_close(loop):
     _restore_event_loop()
 
 
+def test_cant_close_running_loop():
+    with pytest.raises(RuntimeError):
+        aio.run(_coro_close_running_loop())
+    _restore_event_loop()
+
+
+async def _coro_close_running_loop():
+    aio.get_running_loop().close()
+
+
 def _restore_event_loop():
     aio.set_event_loop(aio.new_event_loop())
 

@@ -162,6 +162,8 @@ class Loop:
         return future.result()
 
     def close(self):
+        if self.is_running():
+            raise RuntimeError('Event loop is running')
         self._is_closed = True
 
     def is_closed(self) -> bool:
