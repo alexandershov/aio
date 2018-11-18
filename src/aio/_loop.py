@@ -102,6 +102,7 @@ class Loop:
         return self.call_at(when, callback, *args)
 
     def call_at(self, when, callback, *args) -> TimerHandle:
+        self._validate_is_not_closed()
         callback = _Callback(
             when=when,
             index=self._callbacks_counter,
