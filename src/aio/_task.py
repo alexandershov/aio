@@ -12,6 +12,10 @@ def ensure_future(fut_or_coro):
     return fut_or_coro
 
 
+class _WaitForCancel(Exception):
+    pass
+
+
 class Task(aio.future.BaseFuture):
     def __init__(self, coro):
         super().__init__()
@@ -19,6 +23,7 @@ class Task(aio.future.BaseFuture):
         self._state = 'pending'
         self._future = aio.Future()
         self._cancelling = False
+        self._aio_future_blocking = None
         loop = aio.get_event_loop()
         loop.call_soon(self._run)
         logger.debug('Created %s', self)
@@ -63,10 +68,7 @@ class Task(aio.future.BaseFuture):
         self._state = 'running'
         logger.debug('Running %s', self)
         try:
-            if self._cancelling:
-                future = self._coro.throw(aio.CancelledError)
-            else:
-                future = self._coro.send(None)
+            future = self._continue_coro()
         except StopIteration as exc:
             self._state = 'done'
             self._future.set_result(exc.value)
@@ -74,13 +76,27 @@ class Task(aio.future.BaseFuture):
             self._state = 'cancelled'
             # TODO: I've lost traceback here
             self._future.cancel()
+        except _WaitForCancel:
+            pass
         except Exception as exc:
             self._state = 'done'
             self._future.set_exception(exc)
         else:
             if not isinstance(future, aio.Future):
                 raise RuntimeError(f'{future!r} is not a future')
+            self._aio_future_blocking = future
             future.add_done_callback(lambda _: self._run())
+        if self._cancelling:
+            self._cancelling = False
+
+    def _continue_coro(self):
+        if self._cancelling:
+            if self._aio_future_blocking is None:
+                return self._coro.throw(aio.CancelledError)
+            if not self._aio_future_blocking.cancel():
+                return self._coro.throw(aio.CancelledError)
+            raise _WaitForCancel
+        return self._coro.send(None)
 
     def __str__(self) -> str:
         return f'<Task {self._state} {self._coro}>'

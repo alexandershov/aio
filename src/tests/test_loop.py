@@ -147,13 +147,13 @@ def test_nested_coroutine(loop):
 
 def test_coroutine_with_failed_future(future, loop):
     loop.call_soon(future.set_exception, ZeroDivisionError)
-    exc = loop.run_until_complete(_wait(future))
+    exc = loop.run_until_complete(_wait_and_catch(future))
     assert isinstance(exc, ZeroDivisionError)
 
 
 def test_coroutine_with_done_future(future, loop):
     loop.call_soon(future.set_result, 9)
-    result = loop.run_until_complete(_wait(future))
+    result = loop.run_until_complete(_wait_and_catch(future))
     assert result == 9
 
 
@@ -276,6 +276,14 @@ def test_cancel_task_blocking_on_future(loop):
     assert loop.run_until_complete(task) == -9
 
 
+def test_cancel_task_cancels_future_blocking(future, loop):
+    task = aio.Task(_wait(future))
+    loop.call_soon(task.cancel)
+    with pytest.raises(aio.CancelledError):
+        loop.run_until_complete(task)
+    assert future.cancelled()
+
+
 async def _coro_ignoring_cancelled_error():
     try:
         await _sleep(0.0001)
@@ -297,13 +305,17 @@ def _always_raises(exception):
     raise exception
 
 
-async def _wait(future):
+async def _wait_and_catch(future):
     try:
         result = await future
     except Exception as exc:
         return exc
     else:
         return result
+
+
+async def _wait(future):
+    return await future
 
 
 async def _coro_zero_division():
