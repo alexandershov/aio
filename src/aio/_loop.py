@@ -247,5 +247,5 @@ def run(coro):
     try:
         return loop.run_until_complete(coro)
     finally:
-        # TODO: close loop
+        loop.close()
         set_event_loop(None)
