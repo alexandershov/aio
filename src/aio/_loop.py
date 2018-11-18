@@ -79,6 +79,7 @@ class TimerHandle(Handle):
 class Loop:
     def __init__(self):
         self._running = False
+        self._is_closed = False
         self._pending_callbacks: tp.Deque[_Callback] = collections.deque()
         # TODO: can _soon_callbacks and _delayed_callbacks be merged into a single attribute?
         self._soon_callbacks: tp.List[_Callback] = []
@@ -154,6 +155,12 @@ class Loop:
         if not future.done():
             raise RuntimeError(f'Loop stopped before {future} completed')
         return future.result()
+
+    def close(self):
+        self._is_closed = True
+
+    def is_closed(self) -> bool:
+        return self._is_closed
 
     def _prepare_soon_pending_callbacks(self):
         self._pending_callbacks.extend(self._soon_callbacks)

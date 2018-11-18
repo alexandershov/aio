@@ -295,6 +295,11 @@ def test_run_future(future):
     aio.set_event_loop(aio.new_event_loop())
 
 
+def test_close(loop):
+    loop.close()
+    assert loop.is_closed()
+
+
 async def _coro_ignoring_cancelled_error():
     try:
         await _sleep(0.0001)
