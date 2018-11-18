@@ -263,7 +263,7 @@ def test_get_event_loop_after_unset():
 
 def test_cancel_task(loop):
     task = aio.Task(_coro_pass())
-    task.cancel()
+    assert task.cancel() is True
     with pytest.raises(aio.CancelledError):
         loop.run_until_complete(task)
     assert task.cancelled()

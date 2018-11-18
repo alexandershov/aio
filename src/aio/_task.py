@@ -51,6 +51,7 @@ class Task(aio.future.BaseFuture):
         self._cancelling = True
         loop = aio.get_event_loop()
         loop.call_soon(self._run)
+        return True
 
     def cancelled(self) -> bool:
         return self._future.cancelled()
