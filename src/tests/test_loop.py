@@ -270,6 +270,12 @@ def test_cancel_task(loop):
     assert task.cancel() is False
 
 
+def test_cancel_task_blocking_on_future(loop):
+    task = aio.Task(_coro_ignoring_cancelled_error())
+    loop.call_soon(task.cancel)
+    assert loop.run_until_complete(task) == -9
+
+
 async def _coro_ignoring_cancelled_error():
     try:
         await _sleep(0.0001)
