@@ -140,7 +140,7 @@ class Loop:
     def _prepare_pending_callbacks(self):
         assert not self._pending_callbacks
         self._prepare_soon_pending_callbacks()
-        self._prepared_delayed_pending_callbacks()
+        self._prepare_delayed_pending_callbacks()
 
     def _call_pending_callbacks(self):
         while self._pending_callbacks:
@@ -192,7 +192,7 @@ class Loop:
         self._pending_callbacks.extend(self._soon_callbacks)
         self._soon_callbacks = []
 
-    def _prepared_delayed_pending_callbacks(self):
+    def _prepare_delayed_pending_callbacks(self):
         now = self.time()
         while self._has_delayed_callback_to_call(now):
             a_callback = heapq.heappop(self._delayed_callbacks)
