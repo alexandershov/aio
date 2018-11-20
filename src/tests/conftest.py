@@ -11,8 +11,7 @@ def future_fixture(request):
     return aio.Future()
 
 
-# TODO: probably it should be autouse, for independent tests
-@pytest.fixture(name='loop')
+@pytest.fixture(name='loop', autouse=True)
 def loop_fixture(request):
     del request  # unused
     loop = aio.new_event_loop()
