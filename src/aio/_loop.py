@@ -101,7 +101,7 @@ class Loop:
             index=self._callbacks_counter,
             function=callback,
             args=args)
-        self._add_soon_callback(callback)
+        self._add_delayed_callback(callback)
         return Handle(callback)
 
     def call_later(self, delay, callback, *args) -> TimerHandle:
