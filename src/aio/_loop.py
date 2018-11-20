@@ -130,11 +130,14 @@ class Loop:
         logger.debug('Running %s forever', self)
         self._running = True
         while self._running:
-            sleep_duration = self._get_time_till_next_callback()
-            if sleep_duration:
-                time.sleep(sleep_duration)
+            self._wait_for_next_callback()
             self._prepare_pending_callbacks()
             self._call_pending_callbacks()
+
+    def _wait_for_next_callback(self):
+        sleep_duration = self._get_time_till_next_callback()
+        if sleep_duration:
+            time.sleep(sleep_duration)
 
     def _prepare_pending_callbacks(self):
         assert not self._pending_callbacks
