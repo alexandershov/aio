@@ -258,7 +258,6 @@ def test_get_event_loop_after_unset():
     aio.set_event_loop(None)
     with pytest.raises(RuntimeError):
         aio.get_event_loop()
-    aio.set_event_loop(aio.new_event_loop())
 
 
 def test_cancel_task(loop):
@@ -395,7 +394,7 @@ async def _coro_close_running_loop():
 
 
 def _restore_event_loop():
-    aio.set_event_loop(aio.new_event_loop())
+    pass
 
 
 async def _coro_ignoring_cancelled_error():
