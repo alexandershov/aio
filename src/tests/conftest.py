@@ -16,7 +16,8 @@ def loop_fixture(request):
     del request  # unused
     loop = aio.new_event_loop()
     aio.set_event_loop(loop)
-    return loop
+    yield loop
+    aio.set_event_loop(None)
 
 
 @pytest.fixture(scope='session', autouse=True)
