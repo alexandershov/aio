@@ -26,7 +26,6 @@ class _Callback:
             args: tp.Tuple) -> None:
         self._priority = priority
         self._when = when
-        # TODO: remove index
         self._index = index
         self._function = function
         self._args = args
