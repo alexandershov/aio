@@ -82,12 +82,11 @@ class TimerHandle(Handle):
 
 class Loop:
     def __init__(self):
+        self._callbacks: tp.List[_Callback] = []
+        self._callbacks_counter = 0
         self._running = False
         self._is_closed = False
         self._pending_callbacks: tp.Deque[_Callback] = collections.deque()
-        # TODO: can _soon_callbacks and _delayed_callbacks be merged into a single attribute?
-        self._callbacks: tp.List[_Callback] = []
-        self._callbacks_counter = 0
         self._current_task = None
         self._all_tasks = set()
 
