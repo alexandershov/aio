@@ -86,7 +86,6 @@ class Loop:
         self._is_closed = False
         self._pending_callbacks: tp.Deque[_Callback] = collections.deque()
         # TODO: can _soon_callbacks and _delayed_callbacks be merged into a single attribute?
-        self._soon_callbacks: tp.List[_Callback] = []
         self._delayed_callbacks: tp.List[_Callback] = []
         self._callbacks_counter = 0
         self._current_task = None
@@ -147,7 +146,6 @@ class Loop:
 
     def _prepare_pending_callbacks(self):
         assert not self._pending_callbacks
-        self._prepare_soon_pending_callbacks()
         self._prepare_delayed_pending_callbacks()
 
     def _call_pending_callbacks(self):
@@ -196,10 +194,6 @@ class Loop:
         if self.is_closed():
             raise RuntimeError('Event loop is closed')
 
-    def _prepare_soon_pending_callbacks(self):
-        self._pending_callbacks.extend(self._soon_callbacks)
-        self._soon_callbacks = []
-
     def _prepare_delayed_pending_callbacks(self):
         now = self.time()
         while self._has_delayed_callback_to_call(now):
@@ -212,8 +206,6 @@ class Loop:
         return self._delayed_callbacks[0].when <= now
 
     def _get_time_till_next_callback(self):
-        if self._soon_callbacks:
-            return 0.0
         if self._delayed_callbacks:
             return max(0.0, self._delayed_callbacks[0].when - self.time())
         return 1.0
@@ -221,11 +213,6 @@ class Loop:
     # noinspection PyMethodMayBeStatic
     def _handle_callback_exception(self, callback: _Callback) -> None:
         logger.error('Got an exception during handling of %s: ', callback, exc_info=True)
-
-    def _add_soon_callback(self, callback: _Callback) -> None:
-        logger.debug('Adding %s to %s', callback, self)
-        self._soon_callbacks.append(callback)
-        self._callbacks_counter += 1
 
     def _add_delayed_callback(self, callback: _Callback) -> None:
         logger.debug('Adding %s to %s', callback, self)
