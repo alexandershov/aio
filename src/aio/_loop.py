@@ -130,12 +130,11 @@ class Loop:
         logger.debug('Running %s forever', self)
         self._running = True
         while self._running:
-            if not self._has_callbacks():
-                time.sleep(1)
-            else:
-                self._prepare_pending_callbacks()
-                self._call_pending_callbacks()
-                # TODO: add sleep
+            sleep_duration = self._get_time_till_next_callback()
+            if sleep_duration:
+                time.sleep(sleep_duration)
+            self._prepare_pending_callbacks()
+            self._call_pending_callbacks()
 
     def _prepare_pending_callbacks(self):
         assert not self._pending_callbacks
@@ -203,8 +202,12 @@ class Loop:
             return False
         return self._delayed_callbacks[0].when <= now
 
-    def _has_callbacks(self) -> bool:
-        return bool(self._soon_callbacks or self._delayed_callbacks)
+    def _get_time_till_next_callback(self):
+        if self._soon_callbacks:
+            return 0.0
+        if self._delayed_callbacks:
+            return max(0.0, self._delayed_callbacks[0].when - self.time())
+        return 1.0
 
     # noinspection PyMethodMayBeStatic
     def _handle_callback_exception(self, callback: _Callback) -> None:
