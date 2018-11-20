@@ -86,7 +86,7 @@ class Loop:
         self._is_closed = False
         self._pending_callbacks: tp.Deque[_Callback] = collections.deque()
         # TODO: can _soon_callbacks and _delayed_callbacks be merged into a single attribute?
-        self._delayed_callbacks: tp.List[_Callback] = []
+        self._callbacks: tp.List[_Callback] = []
         self._callbacks_counter = 0
         self._current_task = None
         self._all_tasks = set()
@@ -197,17 +197,17 @@ class Loop:
     def _prepare_delayed_pending_callbacks(self):
         now = self.time()
         while self._has_delayed_callback_to_call(now):
-            a_callback = heapq.heappop(self._delayed_callbacks)
+            a_callback = heapq.heappop(self._callbacks)
             self._pending_callbacks.append(a_callback)
 
     def _has_delayed_callback_to_call(self, now: float) -> bool:
-        if not self._delayed_callbacks:
+        if not self._callbacks:
             return False
-        return self._delayed_callbacks[0].when <= now
+        return self._callbacks[0].when <= now
 
     def _get_time_till_next_callback(self):
-        if self._delayed_callbacks:
-            return max(0.0, self._delayed_callbacks[0].when - self.time())
+        if self._callbacks:
+            return max(0.0, self._callbacks[0].when - self.time())
         return 1.0
 
     # noinspection PyMethodMayBeStatic
@@ -216,7 +216,7 @@ class Loop:
 
     def _add_delayed_callback(self, callback: _Callback) -> None:
         logger.debug('Adding %s to %s', callback, self)
-        heapq.heappush(self._delayed_callbacks, callback)
+        heapq.heappush(self._callbacks, callback)
         self._callbacks_counter += 1
 
     def __str__(self):
