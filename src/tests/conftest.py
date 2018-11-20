@@ -19,7 +19,7 @@ def loop_fixture(request):
     return loop
 
 
-@pytest.fixture(autouse=True, scope='session')
+@pytest.fixture(scope='session', autouse=True)
 def logging_fixture(request):
     logger = logging.getLogger('aio')
     level = _get_logging_level(request)
