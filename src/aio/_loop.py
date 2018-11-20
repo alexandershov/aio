@@ -99,7 +99,7 @@ class Loop:
             index=self._callbacks_counter,
             function=callback,
             args=args)
-        self._add_delayed_callback(callback)
+        self._add_callback(callback)
         return Handle(callback)
 
     def call_later(self, delay, callback, *args) -> TimerHandle:
@@ -115,7 +115,7 @@ class Loop:
             index=self._callbacks_counter,
             function=callback,
             args=args)
-        self._add_delayed_callback(callback)
+        self._add_callback(callback)
         return TimerHandle(callback)
 
     # noinspection PyMethodMayBeStatic
@@ -146,7 +146,10 @@ class Loop:
 
     def _prepare_pending_callbacks(self):
         assert not self._pending_callbacks
-        self._prepare_delayed_pending_callbacks()
+        now = self.time()
+        while self._has_ready_callback(now):
+            a_callback = heapq.heappop(self._callbacks)
+            self._pending_callbacks.append(a_callback)
 
     def _call_pending_callbacks(self):
         while self._pending_callbacks:
@@ -194,13 +197,7 @@ class Loop:
         if self.is_closed():
             raise RuntimeError('Event loop is closed')
 
-    def _prepare_delayed_pending_callbacks(self):
-        now = self.time()
-        while self._has_delayed_callback_to_call(now):
-            a_callback = heapq.heappop(self._callbacks)
-            self._pending_callbacks.append(a_callback)
-
-    def _has_delayed_callback_to_call(self, now: float) -> bool:
+    def _has_ready_callback(self, now: float) -> bool:
         if not self._callbacks:
             return False
         return self._callbacks[0].when <= now
@@ -214,7 +211,7 @@ class Loop:
     def _handle_callback_exception(self, callback: _Callback) -> None:
         logger.error('Got an exception during handling of %s: ', callback, exc_info=True)
 
-    def _add_delayed_callback(self, callback: _Callback) -> None:
+    def _add_callback(self, callback: _Callback) -> None:
         logger.debug('Adding %s to %s', callback, self)
         heapq.heappush(self._callbacks, callback)
         self._callbacks_counter += 1
