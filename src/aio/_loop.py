@@ -10,16 +10,21 @@ import aio
 
 logger = logging.getLogger(__name__)
 
+_SOON_CALLBACK_PRIORITY = 0
+_DELAYED_CALLBACK_PRIORITY = 1
+
 
 @functools.total_ordering
 class _Callback:
     # noinspection PyShadowingBuiltins
     def __init__(
             self,
+            priority: int,
             when: float,
             index: int,
             function: tp.Callable,
             args: tp.Tuple) -> None:
+        self._priority = priority
         self._when = when
         # TODO: remove index
         self._index = index
@@ -57,7 +62,7 @@ class _Callback:
         return f'_Callback(when={self._when}, function={self._function}, args={self._args})'
 
     def _as_tuple(self):
-        return self._when, self._index
+        return self._priority, self._when, self._index
 
 
 class Handle:
@@ -91,6 +96,7 @@ class Loop:
     def call_soon(self, callback, *args) -> Handle:
         self._validate_is_not_closed()
         callback = _Callback(
+            priority=_SOON_CALLBACK_PRIORITY,
             when=self.time(),
             index=self._callbacks_counter,
             function=callback,
@@ -106,6 +112,7 @@ class Loop:
     def call_at(self, when, callback, *args) -> TimerHandle:
         self._validate_is_not_closed()
         callback = _Callback(
+            priority=_DELAYED_CALLBACK_PRIORITY,
             when=when,
             index=self._callbacks_counter,
             function=callback,
