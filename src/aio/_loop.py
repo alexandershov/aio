@@ -173,16 +173,21 @@ class Loop:
             index=self._callbacks_counter)
 
     def _wait_for_next_callback(self):
-        sleep_duration = self._get_time_till_next_callback()
-        if sleep_duration:
-            time.sleep(sleep_duration)
+        pause = self._get_pause_till_next_callback()
+        if pause > 0:
+            time.sleep(pause)
 
     def _prepare_pending_callbacks(self):
         assert not self._pending_callbacks
         now = self.time()
         while self._has_ready_callback(now):
-            _, callback = heapq.heappop(self._queue)
+            callback = self._pop_ready_callback()
             self._pending_callbacks.append(callback)
+
+    def _pop_ready_callback(self) -> _Callback:
+        assert self._queue
+        _, callback = heapq.heappop(self._queue)
+        return callback
 
     def _call_pending_callbacks(self):
         while self._pending_callbacks:
@@ -206,7 +211,7 @@ class Loop:
             return False
         return self._get_when_of_next_callback() <= now
 
-    def _get_time_till_next_callback(self):
+    def _get_pause_till_next_callback(self):
         if not self._queue:
             return 1.0
         return max(0.0, self._get_when_of_next_callback() - self.time())
