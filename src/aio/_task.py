@@ -4,6 +4,7 @@ import logging
 import aio
 
 from . import _loop
+from . import future as _future
 
 logger = logging.getLogger(__name__)
 
@@ -30,12 +31,12 @@ class _WaitForCancel(Exception):
     pass
 
 
-class Task(aio.future.BaseFuture):
+class Task(_future.BaseFuture):
     def __init__(self, coro):
         super().__init__()
         self._coro = coro
         self._state = 'pending'
-        self._future = aio.Future()
+        self._future = _future.Future()
         self._cancelling = False
         self._aio_future_blocking = None
         self._loop = aio.get_event_loop()
