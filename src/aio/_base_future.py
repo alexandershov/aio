@@ -9,7 +9,7 @@ class BaseFuture(metaclass=abc.ABCMeta):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def set_result(self, result) -> None:
+    def set_result(self, result: object) -> None:
         raise NotImplementedError
 
     @abc.abstractmethod
