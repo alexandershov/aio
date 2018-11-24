@@ -114,6 +114,8 @@ class Future(_base_future.BaseFuture):
     def _get_state(self) -> str:
         if not self.done():
             return 'pending'
+        if self.cancelled():
+            return f'cancelled'
         if self._has_exception():
             return f'exception={self._exception!r}'
         return f'result={self._result!r}'
