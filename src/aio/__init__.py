@@ -1,6 +1,6 @@
 from ._errors import CancelledError, InvalidStateError
 
-from .future import Future
+from ._future import Future
 
 from ._loop import (
     Loop,

@@ -4,7 +4,7 @@ import logging
 import aio
 
 from . import _loop
-from . import future as _future
+from . import _future
 
 logger = logging.getLogger(__name__)
 
