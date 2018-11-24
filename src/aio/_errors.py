@@ -1,10 +1,6 @@
-class BaseError(Exception):
+class CancelledError(Exception):
     pass
 
 
-class CancelledError(BaseError):
-    pass
-
-
-class InvalidStateError(BaseError):
+class InvalidStateError(Exception):
     pass
