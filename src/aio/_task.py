@@ -1,8 +1,7 @@
 import inspect
 import logging
 
-import aio
-
+from . import _errors
 from . import _loop
 from . import _future
 
@@ -39,7 +38,7 @@ class Task(_future.BaseFuture):
         self._future = _future.Future()
         self._cancelling = False
         self._aio_future_blocking = None
-        self._loop = aio.get_event_loop()
+        self._loop = _loop.get_event_loop()
         self._loop.add_task(self)
         self._loop.call_soon(self._run)
         logger.debug('Created %s', self)
@@ -75,7 +74,7 @@ class Task(_future.BaseFuture):
     def cancelled(self) -> bool:
         return self._future.cancelled()
 
-    def get_loop(self) -> aio.Loop:
+    def get_loop(self) -> _loop.Loop:
         return self._loop
 
     def _run(self):
@@ -90,7 +89,7 @@ class Task(_future.BaseFuture):
         except StopIteration as exc:
             self._state = 'done'
             self._future.set_result(exc.value)
-        except aio.CancelledError:
+        except _errors.CancelledError:
             self._state = 'cancelled'
             self._future.cancel()
         except _WaitForCancel:
@@ -99,7 +98,7 @@ class Task(_future.BaseFuture):
             self._state = 'done'
             self._future.set_exception(exc)
         else:
-            if not isinstance(future, aio.Future):
+            if not isinstance(future, _future.Future):
                 raise RuntimeError(f'{future!r} is not a future')
             self._aio_future_blocking = future
             future.add_done_callback(lambda _: self._run())
@@ -110,9 +109,9 @@ class Task(_future.BaseFuture):
     def _continue_coro(self):
         if self._cancelling:
             if self._aio_future_blocking is None:
-                return self._coro.throw(aio.CancelledError)
+                return self._coro.throw(_errors.CancelledError)
             if not self._aio_future_blocking.cancel():
-                return self._coro.throw(aio.CancelledError)
+                return self._coro.throw(_errors.CancelledError)
             raise _WaitForCancel
         return self._coro.send(None)
 
