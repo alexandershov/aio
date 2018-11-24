@@ -66,7 +66,7 @@ class TimerHandle(Handle):
 
 class Loop:
     def __init__(self):
-        self._callbacks: tp.List[_Callback] = []
+        self._callbacks: tp.List[tp.Tuple[_Priority, _Callback]] = []
         self._callbacks_counter = 0
         self._running = False
         self._is_closed = False
