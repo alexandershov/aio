@@ -139,12 +139,14 @@ class Loop:
 
     def close(self):
         self._require_not_is_running()
+        logger.debug('Closing %s', self)
         self._is_closed = True
 
     def is_closed(self) -> bool:
         return self._is_closed
 
     def set_exception_handler(self, exception_handler):
+        logger.debug('Setting exception_handler of %s to %s', self, exception_handler)
         self._exception_handler = exception_handler
 
     def current_task(self):
@@ -179,6 +181,7 @@ class Loop:
     def _wait_for_next_callback(self):
         pause = self._get_pause_till_next_callback()
         if pause > 0:
+            logger.debug('Waiting %.3f seconds for next callback', pause)
             time.sleep(pause)
 
     def _prepare_pending_callbacks(self):
@@ -193,6 +196,7 @@ class Loop:
         return callback
 
     def _call_pending_callbacks(self):
+        logger.debug('Calling %d pending callbacks', len(self._pending_callbacks))
         while self._pending_callbacks:
             callback = self._pending_callbacks.popleft()
             # noinspection PyBroadException
@@ -240,6 +244,7 @@ def get_event_loop() -> Loop:
     if _loop is None:
         raise RuntimeError('Event loop is unset for this context')
     if _loop is _MISSING:
+        logger.debug("Event loop doesn't exists for this context, creating a new one")
         set_event_loop(new_event_loop())
     return _loop
 
