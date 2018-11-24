@@ -388,6 +388,15 @@ def test_ensure_future_on_coroutine(loop):
     assert loop.run_until_complete(future) == 9
 
 
+class _Awaitable:
+    def __init__(self, future):
+        self._future = future
+
+    def __await__(self):
+        result = yield from self._future
+        return result
+
+
 async def _coro_append_all_tasks(tasks):
     tasks.append(set(aio.all_tasks()))
 
