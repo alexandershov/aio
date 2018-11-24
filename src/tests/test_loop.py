@@ -250,7 +250,13 @@ def test_get_running_loop(loop):
     loop.run_forever()
 
 
-def test_get_running_loop_while_no_loop_is_running():
+def test_get_running_loop_when_no_loop_exists():
+    aio.set_event_loop(None)
+    with pytest.raises(RuntimeError):
+        aio.get_running_loop()
+
+
+def test_get_running_loop_when_no_loop_is_running():
     with pytest.raises(RuntimeError):
         aio.get_running_loop()
 
