@@ -157,7 +157,7 @@ class Loop:
             try:
                 callback()
             except Exception:
-                self._handle_callback_exception(callback)
+                self.default_exception_handler(callback)
 
     def run_until_complete(self, future):
         self._validate_is_not_closed()
@@ -207,7 +207,7 @@ class Loop:
         return 1.0
 
     # noinspection PyMethodMayBeStatic
-    def _handle_callback_exception(self, callback: _Callback) -> None:
+    def default_exception_handler(self, callback: _Callback) -> None:
         logger.error('Got an exception during handling of %s: ', callback, exc_info=True)
 
     def _add_callback(self, callback: _Callback) -> None:
