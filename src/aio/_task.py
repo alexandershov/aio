@@ -107,7 +107,7 @@ class Task(_base_future.BaseFuture):
             self._state = 'done'
             self._future.set_exception(exc)
         else:
-            if not isinstance(future, _future.Future):
+            if not isinstance(future, _base_future.BaseFuture):
                 raise RuntimeError(f'{future!r} is not a future')
             self._aio_future_blocking = future
             future.add_done_callback(lambda _: self._run())
