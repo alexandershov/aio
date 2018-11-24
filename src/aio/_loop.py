@@ -43,8 +43,18 @@ class _Callback:
         else:
             return self._function(*self._args)
 
-    def __repr__(self) -> str:
-        return f'_Callback(function={self._function}, args={self._args})'
+    def __str__(self) -> str:
+        function_str = self._get_function_str()
+        args_str = self._get_args_str()
+        return f'{function_str}({args_str})'
+
+    def _get_function_str(self) -> str:
+        if hasattr(self._function, '__qualname__'):
+            return self._function.__qualname__
+        return str(self._function)
+
+    def _get_args_str(self) -> str:
+        return ', '.join(map(repr, self._args))
 
 
 _Queue = tp.List[tp.Tuple[_Priority, _Callback]]
