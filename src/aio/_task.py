@@ -48,13 +48,13 @@ class Task(_base_future.BaseFuture):
         return self._future.result()
 
     def set_result(self, result) -> None:
-        raise RuntimeError(f'{self} does not support set_result()')
+        raise RuntimeError(f"{self} doesn't support set_result()")
 
     def exception(self) -> Exception:
         return self._future.exception()
 
     def set_exception(self, exception) -> None:
-        raise RuntimeError(f'{self} does not support set_exception()')
+        raise RuntimeError(f"{self} doesn't support set_exception()")
 
     def done(self) -> bool:
         return self._future.done()
