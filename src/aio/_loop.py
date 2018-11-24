@@ -14,7 +14,6 @@ _DELAYED_CALLBACK_PRIORITY = 1
 
 @functools.total_ordering
 class _Callback:
-    # noinspection PyShadowingBuiltins
     def __init__(
             self,
             priority: int,
