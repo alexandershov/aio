@@ -102,7 +102,7 @@ class Loop:
             priority=priority,
             function=callback,
             args=args)
-        self._add_callback(callback)
+        self._add_callback(priority, callback)
         return Handle(callback)
 
     def call_later(self, delay, callback, *args) -> TimerHandle:
@@ -120,7 +120,7 @@ class Loop:
             priority=priority,
             function=callback,
             args=args)
-        self._add_callback(callback)
+        self._add_callback(priority, callback)
         return TimerHandle(callback)
 
     # noinspection PyMethodMayBeStatic
@@ -153,8 +153,8 @@ class Loop:
         assert not self._pending_callbacks
         now = self.time()
         while self._has_ready_callback(now):
-            a_callback = heapq.heappop(self._callbacks)
-            self._pending_callbacks.append(a_callback)
+            _, callback = heapq.heappop(self._callbacks)
+            self._pending_callbacks.append(callback)
 
     def _call_pending_callbacks(self):
         while self._pending_callbacks:
@@ -222,11 +222,12 @@ class Loop:
 
     def _get_when_of_next_callback(self):
         assert self._callbacks
-        return self._callbacks[0].when
+        priority, _ = self._callbacks[0]
+        return priority.when
 
-    def _add_callback(self, callback: _Callback) -> None:
+    def _add_callback(self, priority: _Priority, callback: _Callback) -> None:
         logger.debug('Adding %s to %s', callback, self)
-        heapq.heappush(self._callbacks, callback)
+        heapq.heappush(self._callbacks, (priority, callback))
         self._callbacks_counter += 1
 
     def __str__(self):
