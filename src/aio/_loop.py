@@ -67,12 +67,15 @@ class TimerHandle(Handle):
 class Loop:
     def __init__(self):
         self._queue: tp.List[tp.Tuple[_Priority, _Callback]] = []
+        self._pending_callbacks: tp.Deque[_Callback] = collections.deque()
         self._callbacks_counter = 0
+
         self._running = False
         self._is_closed = False
-        self._pending_callbacks: tp.Deque[_Callback] = collections.deque()
+
         self._current_task = None
         self._all_tasks = set()
+
         self._exception_handler = _default_exception_handler
 
     def call_soon(self, callback, *args) -> Handle:
