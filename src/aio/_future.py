@@ -21,9 +21,10 @@ class Future(_base_future.BaseFuture):
         self._loop = _loop.get_event_loop()
 
     def result(self) -> object:
-        self._validate_done()
+        self._require_done()
         if self._has_exception():
             raise self._exception
+        assert self._result is not _MISSING
         return self._result
 
     def set_result(self, result) -> None:
@@ -33,7 +34,7 @@ class Future(_base_future.BaseFuture):
             self._exception = None
 
     def exception(self) -> Exception:
-        self._validate_done()
+        self._require_done()
         return self._exception
 
     def set_exception(self, exception) -> None:
@@ -85,11 +86,11 @@ class Future(_base_future.BaseFuture):
         while self._callbacks:
             self._loop.call_soon(self._callbacks.popleft(), self)
 
-    def _validate_not_done(self):
+    def _require_not_done(self):
         if self.done():
             raise _errors.InvalidStateError(f'{self} is already done')
 
-    def _validate_done(self):
+    def _require_done(self):
         if not self.done():
             raise _errors.InvalidStateError(f'{self} is not done')
 
@@ -98,7 +99,7 @@ class Future(_base_future.BaseFuture):
 
     @contextlib.contextmanager
     def _transition_to_done(self):
-        self._validate_not_done()
+        self._require_not_done()
         yield
         self._mark_as_done()
         self._schedule_callbacks()
