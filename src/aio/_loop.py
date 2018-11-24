@@ -86,9 +86,7 @@ class Loop:
     def call_soon(self, callback, *args) -> Handle:
         self._require_not_is_closed()
         priority = self._build_soon_priority()
-        callback = _Callback(
-            function=callback,
-            args=args)
+        callback = _Callback(callback, args)
         self._add_callback(priority, callback)
         return Handle(callback)
 
@@ -100,9 +98,7 @@ class Loop:
     def call_at(self, when, callback, *args) -> TimerHandle:
         self._require_not_is_closed()
         priority = self._build_delayed_priority(when)
-        callback = _Callback(
-            function=callback,
-            args=args)
+        callback = _Callback(callback, args)
         self._add_callback(priority, callback)
         return TimerHandle(callback, priority.when)
 
@@ -164,13 +160,13 @@ class Loop:
         self._all_tasks.add(task)
         task.add_done_callback(lambda _: self._all_tasks.remove(task))
 
-    def _build_soon_priority(self):
+    def _build_soon_priority(self) -> _Priority:
         return _Priority(
             level=_SOON_CALLBACK_LEVEL,
             when=self.time(),
             index=self._callbacks_counter)
 
-    def _build_delayed_priority(self, when):
+    def _build_delayed_priority(self, when: float) -> _Priority:
         return _Priority(
             level=_DELAYED_CALLBACK_LEVEL,
             when=when,
