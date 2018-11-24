@@ -10,6 +10,10 @@ def test_fresh_loop_is_not_running(loop):
     assert not loop.is_running()
 
 
+def test_str(loop):
+    assert str(loop) == '<Loop pending>'
+
+
 def test_call_soon(loop):
     loop.call_soon(_Stopper(loop))
     loop.run_forever()
