@@ -45,11 +45,13 @@ class Future(_base_future.BaseFuture):
         return self._done
 
     def add_done_callback(self, callback) -> None:
+        logger.debug('Adding done callback %s to %s', callback, self)
         self._callbacks.append(callback)
         if self.done():
             self._schedule_callbacks()
 
     def remove_done_callback(self, callback) -> int:
+        logger.debug('Removing done callback %s from %s', callback, self)
         new_callbacks = _with_all_occurrences_removed(self._callbacks, callback)
         num_removed = len(self._callbacks) - len(new_callbacks)
         self._callbacks = new_callbacks
