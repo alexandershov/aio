@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 def ensure_future(fut_or_coro):
+    # TODO: fut_or_coro can be awaitable
     if inspect.iscoroutine(fut_or_coro):
         return Task(fut_or_coro)
     return fut_or_coro
