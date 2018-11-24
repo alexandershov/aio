@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 _SOON_CALLBACK_LEVEL = 0
 _DELAYED_CALLBACK_LEVEL = 1
+
 _MISSING = object()
 
 
@@ -45,6 +46,9 @@ class _Callback:
         return f'_Callback(function={self._function}, args={self._args})'
 
 
+_Queue = tp.List[tp.Tuple[_Priority, _Callback]]
+
+
 class Handle:
     def __init__(self, callback: _Callback) -> None:
         self._callback = callback
@@ -67,7 +71,7 @@ class TimerHandle(Handle):
 
 class Loop:
     def __init__(self):
-        self._queue: tp.List[tp.Tuple[_Priority, _Callback]] = []
+        self._queue: _Queue = []
         self._pending_callbacks: tp.Deque[_Callback] = collections.deque()
         self._callbacks_counter = 0
 
@@ -80,7 +84,7 @@ class Loop:
         self._exception_handler = _default_exception_handler
 
     def call_soon(self, callback, *args) -> Handle:
-        self._validate_is_not_closed()
+        self._require_not_is_closed()
         priority = _Priority(
             level=_SOON_CALLBACK_LEVEL,
             when=self.time(),
@@ -92,12 +96,12 @@ class Loop:
         return Handle(callback)
 
     def call_later(self, delay, callback, *args) -> TimerHandle:
-        self._validate_is_not_closed()
+        self._require_not_is_closed()
         when = self.time() + delay
         return self.call_at(when, callback, *args)
 
     def call_at(self, when, callback, *args) -> TimerHandle:
-        self._validate_is_not_closed()
+        self._require_not_is_closed()
         priority = _Priority(
             level=_DELAYED_CALLBACK_LEVEL,
             when=when,
@@ -121,7 +125,7 @@ class Loop:
         return self._running
 
     def run_forever(self) -> None:
-        self._validate_is_not_closed()
+        self._require_not_is_closed()
         logger.debug('Running %s forever', self)
         self._running = True
         while self._running:
@@ -131,7 +135,7 @@ class Loop:
 
     def run_until_complete(self, future):
         from . import _task
-        self._validate_is_not_closed()
+        self._require_not_is_closed()
         logger.debug('Running %s until %s is complete', self, future)
         future = _task.ensure_future(future)
         future.add_done_callback(lambda _: self.stop())
@@ -191,7 +195,7 @@ class Loop:
                 }
                 self._exception_handler(self, context)
 
-    def _validate_is_not_closed(self):
+    def _require_not_is_closed(self):
         if self.is_closed():
             raise RuntimeError('Event loop is closed')
 
