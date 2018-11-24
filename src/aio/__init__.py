@@ -8,8 +8,7 @@ from ._loop import (
     run,
     current_task, all_tasks)
 
-from ._task import Task
-from ._task import ensure_future
+from ._task import Task, ensure_future
 
 import logging
 
