@@ -129,31 +129,6 @@ class Loop:
             self._prepare_pending_callbacks()
             self._call_pending_callbacks()
 
-    def _wait_for_next_callback(self):
-        sleep_duration = self._get_time_till_next_callback()
-        if sleep_duration:
-            time.sleep(sleep_duration)
-
-    def _prepare_pending_callbacks(self):
-        assert not self._pending_callbacks
-        now = self.time()
-        while self._has_ready_callback(now):
-            _, callback = heapq.heappop(self._queue)
-            self._pending_callbacks.append(callback)
-
-    def _call_pending_callbacks(self):
-        while self._pending_callbacks:
-            callback = self._pending_callbacks.popleft()
-            # noinspection PyBroadException
-            try:
-                callback()
-            except Exception as exc:
-                context = {
-                    'message': str(exc),
-                    'exception': exc,
-                }
-                self._exception_handler(self, context)
-
     def run_until_complete(self, future):
         from . import _task
         self._validate_is_not_closed()
@@ -190,6 +165,31 @@ class Loop:
     def add_task(self, task):
         self._all_tasks.add(task)
         task.add_done_callback(lambda _: self._all_tasks.remove(task))
+
+    def _wait_for_next_callback(self):
+        sleep_duration = self._get_time_till_next_callback()
+        if sleep_duration:
+            time.sleep(sleep_duration)
+
+    def _prepare_pending_callbacks(self):
+        assert not self._pending_callbacks
+        now = self.time()
+        while self._has_ready_callback(now):
+            _, callback = heapq.heappop(self._queue)
+            self._pending_callbacks.append(callback)
+
+    def _call_pending_callbacks(self):
+        while self._pending_callbacks:
+            callback = self._pending_callbacks.popleft()
+            # noinspection PyBroadException
+            try:
+                callback()
+            except Exception as exc:
+                context = {
+                    'message': str(exc),
+                    'exception': exc,
+                }
+                self._exception_handler(self, context)
 
     def _validate_is_not_closed(self):
         if self.is_closed():
