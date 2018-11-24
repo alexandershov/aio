@@ -157,7 +157,7 @@ def test_coroutine_with_done_future(loop, future):
     assert result == 9
 
 
-def test_callback_exception(loop):
+def test_exception_handler(loop):
     num_exceptions = 0
 
     def _counting_exception_handler(_loop, context):
