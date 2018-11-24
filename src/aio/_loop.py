@@ -157,8 +157,12 @@ class Loop:
             # noinspection PyBroadException
             try:
                 callback()
-            except Exception:
-                self._exception_handler(self, callback)
+            except Exception as exc:
+                context = {
+                    'message': str(exc),
+                    'exception': exc,
+                }
+                self._exception_handler(self, context)
 
     def run_until_complete(self, future):
         self._validate_is_not_closed()
@@ -275,6 +279,6 @@ def all_tasks(loop=None):
     return loop.all_tasks()
 
 
-def _default_exception_handler(loop, callback: _Callback) -> None:
+def _default_exception_handler(loop, context: dict) -> None:
     del loop  # unused
-    logger.error('Got an exception during handling of %s: ', callback, exc_info=True)
+    logger.error('Got an exception: %s', context['message'], exc_info=True)
