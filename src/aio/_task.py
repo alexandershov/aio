@@ -3,8 +3,8 @@ import logging
 
 from . import _base_future
 from . import _errors
-from . import _loop
 from . import _future
+from . import _loop
 
 logger = logging.getLogger(__name__)
 
