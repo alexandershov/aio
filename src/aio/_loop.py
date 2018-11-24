@@ -1,5 +1,4 @@
 import collections
-import functools
 import heapq
 import inspect
 import logging
@@ -20,24 +19,17 @@ class _Priority:
     index: int
 
 
-@functools.total_ordering
 class _Callback:
     def __init__(
             self,
-            priority: _Priority,
             function: tp.Callable,
             args: tp.Tuple) -> None:
-        self._priority = priority
         self._function = function
         self._args = args
         self._cancelled = False
 
     def cancelled(self) -> bool:
         return self._cancelled
-
-    @property
-    def when(self) -> float:
-        return self._priority.when
 
     def cancel(self) -> None:
         self._cancelled = True
@@ -48,21 +40,8 @@ class _Callback:
         else:
             return self._function(*self._args)
 
-    def __eq__(self, other: object) -> bool:
-        if not isinstance(other, _Callback):
-            return NotImplemented
-        return self._as_tuple() == other._as_tuple()
-
-    def __le__(self, other: object) -> bool:
-        if not isinstance(other, _Callback):
-            return NotImplemented
-        return self._as_tuple() < other._as_tuple()
-
     def __repr__(self) -> str:
-        return f'_Callback(priority={self._priority}, function={self._function}, args={self._args})'
-
-    def _as_tuple(self):
-        return self._priority,
+        return f'_Callback(function={self._function}, args={self._args})'
 
 
 class Handle:
@@ -103,7 +82,6 @@ class Loop:
             when=self.time(),
             index=self._callbacks_counter)
         callback = _Callback(
-            priority=priority,
             function=callback,
             args=args)
         self._add_callback(priority, callback)
@@ -121,7 +99,6 @@ class Loop:
             when=when,
             index=self._callbacks_counter)
         callback = _Callback(
-            priority=priority,
             function=callback,
             args=args)
         self._add_callback(priority, callback)
