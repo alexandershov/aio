@@ -82,7 +82,6 @@ class TimerHandle(Handle):
 
 class Loop:
     def __init__(self):
-        self._exception_handler = self.default_exception_handler
         self._callbacks: tp.List[_Callback] = []
         self._callbacks_counter = 0
         self._running = False
@@ -90,6 +89,7 @@ class Loop:
         self._pending_callbacks: tp.Deque[_Callback] = collections.deque()
         self._current_task = None
         self._all_tasks = set()
+        self._exception_handler = _default_exception_handler
 
     def call_soon(self, callback, *args) -> Handle:
         self._validate_is_not_closed()
@@ -158,7 +158,7 @@ class Loop:
             try:
                 callback()
             except Exception:
-                self.default_exception_handler(callback)
+                self._exception_handler(self, callback)
 
     def run_until_complete(self, future):
         self._validate_is_not_closed()
@@ -211,8 +211,6 @@ class Loop:
         return 1.0
 
     # noinspection PyMethodMayBeStatic
-    def default_exception_handler(self, callback: _Callback) -> None:
-        logger.error('Got an exception during handling of %s: ', callback, exc_info=True)
 
     def _add_callback(self, callback: _Callback) -> None:
         logger.debug('Adding %s to %s', callback, self)
@@ -275,3 +273,8 @@ def all_tasks(loop=None):
     if loop is None:
         loop = get_running_loop()
     return loop.all_tasks()
+
+
+def _default_exception_handler(loop, callback: _Callback) -> None:
+    del loop  # unused
+    logger.error('Got an exception during handling of %s: ', callback, exc_info=True)
