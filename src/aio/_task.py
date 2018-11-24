@@ -89,9 +89,9 @@ class Task(_base_future.BaseFuture):
         if self.done():
             logger.debug('%s is done, nothing to run', self)
             return
-        self.get_loop().set_current_task(self)
-        self._state = 'running'
         logger.debug('Running %s', self)
+        self._state = 'running'
+        self.get_loop().set_current_task(self)
         try:
             future = self._continue_coro()
         except StopIteration as exc:
