@@ -9,11 +9,11 @@ from . import _loop
 logger = logging.getLogger(__name__)
 
 
-def ensure_future(fut_or_coro):
+def ensure_future(obj):
     # TODO: fut_or_coro can be awaitable
-    if inspect.iscoroutine(fut_or_coro):
-        return Task(fut_or_coro)
-    return fut_or_coro
+    if inspect.iscoroutine(obj):
+        return Task(obj)
+    return obj
 
 
 def current_task(loop=None):
