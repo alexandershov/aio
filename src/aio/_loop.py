@@ -40,7 +40,7 @@ class _Callback:
 
     def __call__(self):
         if self.cancelled():
-            logger.debug('%s is cancelled, skipping', self)
+            logger.debug('Skipping call of cancelled %s', self)
         else:
             return self._function(*self._args)
 
