@@ -1,6 +1,6 @@
 import abc
 
-from aio import _loop
+from . import _loop
 
 
 class BaseFuture(metaclass=abc.ABCMeta):
