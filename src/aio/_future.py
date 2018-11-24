@@ -22,7 +22,7 @@ class Future(_base_future.BaseFuture):
 
     def result(self) -> object:
         self._validate_done()
-        if self._has_failed():
+        if self._has_exception():
             raise self._exception
         return self._result
 
@@ -106,14 +106,14 @@ class Future(_base_future.BaseFuture):
     def __repr__(self) -> str:
         return str(self)
 
-    def _has_failed(self) -> bool:
+    def _has_exception(self) -> bool:
         assert self._done
         return self._result is _MISSING
 
     def _get_state(self) -> str:
         if not self.done():
             return 'pending'
-        if self._has_failed():
+        if self._has_exception():
             return f'exception={self._exception!r}'
         return f'result={self._result!r}'
 
