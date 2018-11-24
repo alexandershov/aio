@@ -55,6 +55,7 @@ class Future(_base_future.BaseFuture):
         new_callbacks = _with_all_occurrences_removed(self._callbacks, callback)
         num_removed = len(self._callbacks) - len(new_callbacks)
         self._callbacks = new_callbacks
+        logger.debug('Removed %d callbacks from %s', num_removed, self)
         return num_removed
 
     def cancel(self) -> bool:
