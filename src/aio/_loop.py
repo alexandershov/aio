@@ -267,18 +267,6 @@ def run(coro):
         set_event_loop(None)
 
 
-def current_task(loop=None):
-    if loop is None:
-        loop = get_running_loop()
-    return loop.current_task()
-
-
-def all_tasks(loop=None):
-    if loop is None:
-        loop = get_running_loop()
-    return loop.all_tasks()
-
-
 def _default_exception_handler(loop, context: dict) -> None:
     del loop  # unused
     logger.error('Got an exception: %s', context['message'], exc_info=True)

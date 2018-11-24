@@ -3,6 +3,8 @@ import logging
 
 import aio
 
+from . import _loop
+
 logger = logging.getLogger(__name__)
 
 
@@ -10,6 +12,18 @@ def ensure_future(fut_or_coro):
     if inspect.iscoroutine(fut_or_coro):
         return Task(fut_or_coro)
     return fut_or_coro
+
+
+def current_task(loop=None):
+    if loop is None:
+        loop = _loop.get_running_loop()
+    return loop.current_task()
+
+
+def all_tasks(loop=None):
+    if loop is None:
+        loop = _loop.get_running_loop()
+    return loop.all_tasks()
 
 
 class _WaitForCancel(Exception):
