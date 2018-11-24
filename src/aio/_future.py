@@ -78,7 +78,7 @@ class Future(_base_future.BaseFuture):
         return self.result()
 
     def __await__(self):
-        return (yield from self.__iter__())
+        return (yield from self)
 
     def _schedule_callbacks(self):
         logger.debug('Scheduling callbacks for %s', self)
