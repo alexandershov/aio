@@ -185,7 +185,6 @@ class Loop:
             self._pending_callbacks.append(callback)
 
     def _pop_ready_callback(self) -> _Callback:
-        assert self._queue
         _, callback = heapq.heappop(self._queue)
         return callback
 
@@ -217,7 +216,6 @@ class Loop:
         return max(0.0, self._get_when_of_next_callback() - self.time())
 
     def _get_when_of_next_callback(self):
-        assert self._queue
         priority, _ = self._queue[0]
         return priority.when
 
