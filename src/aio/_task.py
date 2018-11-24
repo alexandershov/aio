@@ -20,10 +20,6 @@ def ensure_future(obj):
         raise TypeError(f'{obj!r} should be Future, coroutine, or awaitable')
 
 
-async def _wrap_awaitable(awaitable):
-    return await awaitable
-
-
 def current_task(loop=None):
     if loop is None:
         loop = _loop.get_running_loop()
@@ -136,3 +132,7 @@ class Task(_base_future.BaseFuture):
 
     def __repr__(self) -> str:
         return str(self)
+
+
+async def _wrap_awaitable(awaitable):
+    return await awaitable
