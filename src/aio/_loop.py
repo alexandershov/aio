@@ -34,6 +34,7 @@ class _Callback:
         return self._cancelled
 
     def cancel(self) -> None:
+        logger.debug('Cancelling %s', self)
         self._cancelled = True
 
     def __call__(self):
@@ -137,8 +138,7 @@ class Loop:
         return future.result()
 
     def close(self):
-        if self.is_running():
-            raise RuntimeError('Event loop is running')
+        self._require_not_is_running()
         self._is_closed = True
 
     def is_closed(self) -> bool:
@@ -159,6 +159,10 @@ class Loop:
     def add_task(self, task):
         self._all_tasks.add(task)
         task.add_done_callback(lambda _: self._all_tasks.remove(task))
+
+    def _require_not_is_running(self):
+        if self.is_running():
+            raise RuntimeError('Event loop is running')
 
     def _build_soon_priority(self) -> _Priority:
         return _Priority(
