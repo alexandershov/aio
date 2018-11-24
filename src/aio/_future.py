@@ -50,14 +50,10 @@ class Future(_base_future.BaseFuture):
             self._schedule_callbacks()
 
     def remove_done_callback(self, callback) -> int:
-        num_before = len(self._callbacks)
-        new_callbacks = collections.deque(
-            cur_callback
-            for cur_callback in self._callbacks
-            if cur_callback != callback
-        )
+        new_callbacks = _with_all_occurrences_removed(self._callbacks, callback)
+        num_removed = len(self._callbacks) - len(new_callbacks)
         self._callbacks = new_callbacks
-        return num_before - len(self._callbacks)
+        return num_removed
 
     def cancel(self) -> bool:
         if self.done():
@@ -128,3 +124,11 @@ def _build_exception_instance(exception) -> Exception:
 
 def _is_subclass_of_exception(exception) -> bool:
     return isinstance(exception, type) and issubclass(exception, Exception)
+
+
+def _with_all_occurrences_removed(deque, item):
+    return collections.deque(
+        cur_item
+        for cur_item in deque
+        if cur_item != item
+    )
