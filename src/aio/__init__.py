@@ -1,4 +1,3 @@
-from ._deferred import Deferred
 from ._errors import CancelledError
 from .future import Future
 from ._loop import get_event_loop
