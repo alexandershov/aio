@@ -85,6 +85,11 @@ def test_cancel_after_done(future):
     assert not future.cancelled()
 
 
+def test_str_after_cancel(future):
+    future.cancel()
+    assert str(future) == '<Future cancelled>'
+
+
 @pytest.mark.parametrize('exception', [
     9,
     int,
