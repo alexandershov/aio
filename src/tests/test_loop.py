@@ -383,9 +383,9 @@ def test_all_tasks(loop):
 
 
 def test_ensure_future_on_coroutine(loop):
-    future = aio.ensure_future(_coro_returning(9))
-    assert isinstance(future, aio.Task)
-    assert loop.run_until_complete(future) == 9
+    task = aio.ensure_future(_coro_returning(9))
+    assert isinstance(task, aio.Task)
+    assert loop.run_until_complete(task) == 9
 
 
 class _Awaitable:
