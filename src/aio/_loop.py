@@ -75,7 +75,7 @@ class Loop:
         self._pending_callbacks: tp.Deque[_Callback] = collections.deque()
         self._callbacks_counter = 0
 
-        self._running = False
+        self._is_running = False
         self._is_closed = False
 
         self._current_task = None
@@ -109,16 +109,16 @@ class Loop:
     def stop(self) -> None:
         logger.debug('Stopping %s', self)
         self._call_pending_callbacks()
-        self._running = False
+        self._is_running = False
 
     def is_running(self) -> bool:
-        return self._running
+        return self._is_running
 
     def run_forever(self) -> None:
         self._require_not_is_closed()
         logger.debug('Running %s forever', self)
-        self._running = True
-        while self._running:
+        self._is_running = True
+        while self._is_running:
             self._wait_for_next_callback()
             self._prepare_pending_callbacks()
             self._call_pending_callbacks()
@@ -222,7 +222,7 @@ class Loop:
         self._callbacks_counter += 1
 
     def __str__(self):
-        state = 'running' if self._running else 'pending'
+        state = 'running' if self._is_running else 'pending'
         return f'<Loop {state}>'
 
 
