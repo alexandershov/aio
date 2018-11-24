@@ -6,8 +6,6 @@ import logging
 import time
 import typing as tp
 
-import aio
-
 logger = logging.getLogger(__name__)
 
 _SOON_CALLBACK_PRIORITY = 0
@@ -165,9 +163,10 @@ class Loop:
                 self._exception_handler(self, context)
 
     def run_until_complete(self, future):
+        from . import _task
         self._validate_is_not_closed()
         logger.debug('Running %s until %s is complete', self, future)
-        future = aio.ensure_future(future)
+        future = _task.ensure_future(future)
         future.add_done_callback(lambda _: self.stop())
 
         self.run_forever()
