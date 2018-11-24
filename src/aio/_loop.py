@@ -8,8 +8,8 @@ import typing as tp
 
 logger = logging.getLogger(__name__)
 
-_SOON_CALLBACK_PRIORITY = 0
-_DELAYED_CALLBACK_PRIORITY = 1
+_SOON_CALLBACK_LEVEL = 0
+_DELAYED_CALLBACK_LEVEL = 1
 
 
 @functools.total_ordering
@@ -91,7 +91,7 @@ class Loop:
     def call_soon(self, callback, *args) -> Handle:
         self._validate_is_not_closed()
         callback = _Callback(
-            priority=_SOON_CALLBACK_PRIORITY,
+            priority=_SOON_CALLBACK_LEVEL,
             when=self.time(),
             index=self._callbacks_counter,
             function=callback,
@@ -107,7 +107,7 @@ class Loop:
     def call_at(self, when, callback, *args) -> TimerHandle:
         self._validate_is_not_closed()
         callback = _Callback(
-            priority=_DELAYED_CALLBACK_PRIORITY,
+            priority=_DELAYED_CALLBACK_LEVEL,
             when=when,
             index=self._callbacks_counter,
             function=callback,
