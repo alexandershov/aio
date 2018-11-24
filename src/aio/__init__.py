@@ -1,13 +1,13 @@
 from ._errors import CancelledError
+
 from .future import Future
-from ._loop import get_event_loop
-from ._loop import get_running_loop
-from ._loop import run
-from ._loop import current_task
-from ._loop import all_tasks
-from ._loop import new_event_loop
-from ._loop import set_event_loop
-from ._loop import Loop
+
+from ._loop import (
+    Loop,
+    get_event_loop, get_running_loop, new_event_loop, set_event_loop,
+    run,
+    current_task, all_tasks)
+
 from ._task import Task
 from ._task import ensure_future
 
