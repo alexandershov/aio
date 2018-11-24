@@ -4,8 +4,8 @@ from ._future import Future
 
 from ._loop import (
     Loop,
-    get_event_loop, get_running_loop, new_event_loop, set_event_loop,
-    run)
+    get_event_loop, new_event_loop, set_event_loop,
+    run, get_running_loop)
 
 from ._task import Task, ensure_future, current_task, all_tasks
 
