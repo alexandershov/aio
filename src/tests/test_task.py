@@ -23,5 +23,9 @@ def test_doesnt_support_set_exception(coro):
         task.set_exception(9)
 
 
+def test_ensure_future_on_future(future):
+    assert aio.ensure_future(future) is future
+
+
 async def _coro_pass():
     pass
