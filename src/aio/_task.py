@@ -34,7 +34,6 @@ class _WaitForCancel(Exception):
 
 class Task(_base_future.BaseFuture):
     def __init__(self, coro):
-        super().__init__()
         self._coro = coro
         self._state = 'pending'
         self._future = _future.Future()
