@@ -213,8 +213,6 @@ class Loop:
             return max(0.0, self._callbacks[0].when - self.time())
         return 1.0
 
-    # noinspection PyMethodMayBeStatic
-
     def _add_callback(self, callback: _Callback) -> None:
         logger.debug('Adding %s to %s', callback, self)
         heapq.heappush(self._callbacks, callback)
