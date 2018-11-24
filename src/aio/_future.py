@@ -15,8 +15,8 @@ class Future(_base_future.BaseFuture):
     def __init__(self):
         self._result = _MISSING
         self._exception: Exception = _MISSING
-        self._done = False
         self._callbacks = collections.deque()
+        self._done = False
         self._cancelled = False
         self._loop = _loop.get_event_loop()
 
