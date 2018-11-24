@@ -11,9 +11,12 @@ logger = logging.getLogger(__name__)
 
 def ensure_future(obj):
     # TODO: fut_or_coro can be awaitable
-    if inspect.iscoroutine(obj):
+    if isinstance(obj, _base_future.BaseFuture):
+        return obj
+    elif inspect.iscoroutine(obj):
         return Task(obj)
-    return obj
+    else:
+        raise TypeError
 
 
 def current_task(loop=None):
