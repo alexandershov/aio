@@ -83,11 +83,11 @@ class Future(_base_future.BaseFuture):
 
     def _validate_not_done(self):
         if self.done():
-            raise _errors.InvalidStateError(f'Future {self} is already done')
+            raise _errors.InvalidStateError(f'{self} is already done')
 
     def _validate_done(self):
         if not self.done():
-            raise _errors.InvalidStateError(f'Future {self} is not done')
+            raise _errors.InvalidStateError(f'{self} is not done')
 
     def _mark_as_done(self):
         self._done = True
