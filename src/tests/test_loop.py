@@ -431,8 +431,13 @@ async def _coro_add(x, y):
 async def _sleep(duration):
     future = aio.Future()
     loop = aio.get_event_loop()
-    loop.call_later(duration, future.set_result, None)
+    loop.call_later(duration, _set_result_if_not_cancelled, future, None)
     await future
+
+
+def _set_result_if_not_cancelled(future, result):
+    if not future.cancelled():
+        future.set_result(result)
 
 
 async def _coro_pass():
