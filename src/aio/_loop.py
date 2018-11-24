@@ -205,12 +205,16 @@ class Loop:
     def _has_ready_callback(self, now: float) -> bool:
         if not self._callbacks:
             return False
-        return self._callbacks[0].when <= now
+        return self._get_when_of_next_callback() <= now
 
     def _get_time_till_next_callback(self):
         if not self._callbacks:
             return 1.0
-        return max(0.0, self._callbacks[0].when - self.time())
+        return max(0.0, self._get_when_of_next_callback() - self.time())
+
+    def _get_when_of_next_callback(self):
+        assert self._callbacks
+        return self._callbacks[0].when
 
     def _add_callback(self, callback: _Callback) -> None:
         logger.debug('Adding %s to %s', callback, self)
