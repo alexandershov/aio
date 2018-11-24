@@ -94,11 +94,12 @@ class Loop:
 
     def call_soon(self, callback, *args) -> Handle:
         self._validate_is_not_closed()
+        priority = _Priority(
+            level=_SOON_CALLBACK_LEVEL,
+            when=self.time(),
+            index=self._callbacks_counter)
         callback = _Callback(
-            priority=_Priority(
-                level=_SOON_CALLBACK_LEVEL,
-                when=self.time(),
-                index=self._callbacks_counter),
+            priority=priority,
             function=callback,
             args=args)
         self._add_callback(callback)
@@ -111,11 +112,12 @@ class Loop:
 
     def call_at(self, when, callback, *args) -> TimerHandle:
         self._validate_is_not_closed()
+        priority = _Priority(
+            level=_DELAYED_CALLBACK_LEVEL,
+            when=when,
+            index=self._callbacks_counter)
         callback = _Callback(
-            priority=_Priority(
-                level=_DELAYED_CALLBACK_LEVEL,
-                when=when,
-                index=self._callbacks_counter),
+            priority=priority,
             function=callback,
             args=args)
         self._add_callback(callback)
