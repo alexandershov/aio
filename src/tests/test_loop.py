@@ -138,7 +138,7 @@ def test_coroutine(loop):
 
 
 def test_coroutine_exception(loop):
-    task = aio.Task(_coro_always_raises(ZeroDivisionError))
+    task = aio.Task(_coro_raising(ZeroDivisionError))
     with pytest.raises(ZeroDivisionError):
         loop.run_until_complete(task)
     with pytest.raises(ZeroDivisionError):
@@ -176,7 +176,7 @@ def test_exception_handler(loop):
         num_exceptions += 1
 
     loop.set_exception_handler(_counting_exception_handler)
-    loop.call_soon(_always_raises, ZeroDivisionError)
+    loop.call_soon(_raising, ZeroDivisionError)
     loop.call_soon(_Stopper(loop))
     loop.run_forever()
     assert not loop.is_running()
@@ -449,7 +449,7 @@ def _assert_is_running(loop):
     assert loop.is_running()
 
 
-def _always_raises(exception):
+def _raising(exception):
     raise exception
 
 
@@ -466,7 +466,7 @@ async def _wait(future):
     return await future
 
 
-async def _coro_always_raises(exception):
+async def _coro_raising(exception):
     raise exception
 
 
