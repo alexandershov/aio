@@ -17,6 +17,7 @@ def loop_fixture(request):
     loop = aio.new_event_loop()
     aio.set_event_loop(loop)
     yield loop
+    loop.close()
     aio.set_event_loop(None)
 
 
