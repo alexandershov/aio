@@ -1,6 +1,7 @@
 import inspect
 import logging
 
+from . import _base_future
 from . import _errors
 from . import _loop
 from . import _future
@@ -30,7 +31,7 @@ class _WaitForCancel(Exception):
     pass
 
 
-class Task(_future.BaseFuture):
+class Task(_base_future.BaseFuture):
     def __init__(self, coro):
         super().__init__()
         self._coro = coro

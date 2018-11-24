@@ -1,8 +1,8 @@
-import abc
 import collections
 import contextlib
 import logging
 
+from . import _base_future
 from . import _errors
 from . import _loop
 
@@ -11,49 +11,7 @@ logger = logging.getLogger(__name__)
 _MISSING = object()
 
 
-class BaseFuture(metaclass=abc.ABCMeta):
-    @abc.abstractmethod
-    def result(self) -> object:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def set_result(self, result) -> None:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def exception(self) -> Exception:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def set_exception(self, exception) -> None:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def done(self) -> bool:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def add_done_callback(self, callback) -> None:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def remove_done_callback(self, callback) -> int:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def cancel(self) -> bool:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def cancelled(self) -> bool:
-        raise NotImplementedError
-
-    @abc.abstractmethod
-    def get_loop(self) -> _loop.Loop:
-        raise NotImplementedError
-
-
-class Future(BaseFuture):
+class Future(_base_future.BaseFuture):
     def __init__(self):
         self._result = _MISSING
         self._exception: Exception = _MISSING
