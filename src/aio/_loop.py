@@ -208,9 +208,9 @@ class Loop:
         return self._callbacks[0].when <= now
 
     def _get_time_till_next_callback(self):
-        if self._callbacks:
-            return max(0.0, self._callbacks[0].when - self.time())
-        return 1.0
+        if not self._callbacks:
+            return 1.0
+        return max(0.0, self._callbacks[0].when - self.time())
 
     def _add_callback(self, callback: _Callback) -> None:
         logger.debug('Adding %s to %s', callback, self)
