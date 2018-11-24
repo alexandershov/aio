@@ -5,11 +5,19 @@ import inspect
 import logging
 import time
 import typing as tp
+from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
 _SOON_CALLBACK_LEVEL = 0
 _DELAYED_CALLBACK_LEVEL = 1
+
+
+@dataclass(frozen=True, order=True)
+class _Priority:
+    level: int
+    when: float
+    index: int
 
 
 @functools.total_ordering
