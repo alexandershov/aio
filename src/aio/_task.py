@@ -32,10 +32,6 @@ def all_tasks(loop=None):
     return loop.all_tasks()
 
 
-class _WaitForCancel(Exception):
-    pass
-
-
 class Task(_base_future.BaseFuture):
     def __init__(self, coro):
         self._coro = coro
@@ -136,3 +132,7 @@ class Task(_base_future.BaseFuture):
 
 async def _wrap_awaitable(awaitable):
     return await awaitable
+
+
+class _WaitForCancel(Exception):
+    pass
