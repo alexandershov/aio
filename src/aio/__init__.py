@@ -1,4 +1,4 @@
-from ._errors import CancelledError
+from ._errors import CancelledError, InvalidStateError
 
 from .future import Future
 

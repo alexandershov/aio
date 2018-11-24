@@ -8,15 +8,6 @@ from . import _loop
 
 logger = logging.getLogger(__name__)
 
-
-class BaseError(Exception):
-    pass
-
-
-class InvalidStateError(BaseError):
-    pass
-
-
 _MISSING = object()
 
 
@@ -134,11 +125,11 @@ class Future(BaseFuture):
 
     def _validate_not_done(self):
         if self.done():
-            raise InvalidStateError(f'Future {self} is already done')
+            raise _errors.InvalidStateError(f'Future {self} is already done')
 
     def _validate_done(self):
         if not self.done():
-            raise InvalidStateError(f'Future {self} is not done')
+            raise _errors.InvalidStateError(f'Future {self} is not done')
 
     def _mark_as_done(self):
         self._done = True
