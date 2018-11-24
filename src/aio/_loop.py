@@ -24,14 +24,10 @@ class _Priority:
 class _Callback:
     def __init__(
             self,
-            priority: int,
-            when: float,
-            index: int,
+            priority: _Priority,
             function: tp.Callable,
             args: tp.Tuple) -> None:
         self._priority = priority
-        self._when = when
-        self._index = index
         self._function = function
         self._args = args
         self._cancelled = False
@@ -41,7 +37,7 @@ class _Callback:
 
     @property
     def when(self) -> float:
-        return self._when
+        return self._priority.when
 
     def cancel(self) -> None:
         self._cancelled = True
@@ -63,10 +59,10 @@ class _Callback:
         return self._as_tuple() < other._as_tuple()
 
     def __repr__(self) -> str:
-        return f'_Callback(when={self._when}, function={self._function}, args={self._args})'
+        return f'_Callback(priority={self._priority}, function={self._function}, args={self._args})'
 
     def _as_tuple(self):
-        return self._priority, self._when, self._index
+        return self._priority,
 
 
 class Handle:
@@ -99,9 +95,10 @@ class Loop:
     def call_soon(self, callback, *args) -> Handle:
         self._validate_is_not_closed()
         callback = _Callback(
-            priority=_SOON_CALLBACK_LEVEL,
-            when=self.time(),
-            index=self._callbacks_counter,
+            priority=_Priority(
+                level=_SOON_CALLBACK_LEVEL,
+                when=self.time(),
+                index=self._callbacks_counter),
             function=callback,
             args=args)
         self._add_callback(callback)
@@ -115,9 +112,10 @@ class Loop:
     def call_at(self, when, callback, *args) -> TimerHandle:
         self._validate_is_not_closed()
         callback = _Callback(
-            priority=_DELAYED_CALLBACK_LEVEL,
-            when=when,
-            index=self._callbacks_counter,
+            priority=_Priority(
+                level=_DELAYED_CALLBACK_LEVEL,
+                when=when,
+                index=self._callbacks_counter),
             function=callback,
             args=args)
         self._add_callback(callback)
