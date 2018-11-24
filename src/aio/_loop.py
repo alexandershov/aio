@@ -82,6 +82,7 @@ class TimerHandle(Handle):
 
 class Loop:
     def __init__(self):
+        self._exception_handler = self.default_exception_handler
         self._callbacks: tp.List[_Callback] = []
         self._callbacks_counter = 0
         self._running = False
@@ -178,6 +179,9 @@ class Loop:
 
     def is_closed(self) -> bool:
         return self._is_closed
+
+    def set_exception_handler(self, exception_handler):
+        self._exception_handler = exception_handler
 
     def current_task(self):
         return self._current_task
