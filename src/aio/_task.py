@@ -66,7 +66,9 @@ class Task(_base_future.BaseFuture):
         return self._future.remove_done_callback(callback)
 
     def cancel(self) -> bool:
+        logger.debug('Cancelling %s', self)
         if self.done():
+            logger.debug("Can't cancel %s, because it's already done", self)
             return False
         self._cancelling = True
         self._loop.call_soon(self._run)
