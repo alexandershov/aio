@@ -85,10 +85,7 @@ class Loop:
 
     def call_soon(self, callback, *args) -> Handle:
         self._require_not_is_closed()
-        priority = _Priority(
-            level=_SOON_CALLBACK_LEVEL,
-            when=self.time(),
-            index=self._callbacks_counter)
+        priority = self._build_soon_priority()
         callback = _Callback(
             function=callback,
             args=args)
@@ -169,6 +166,12 @@ class Loop:
     def add_task(self, task):
         self._all_tasks.add(task)
         task.add_done_callback(lambda _: self._all_tasks.remove(task))
+
+    def _build_soon_priority(self):
+        return _Priority(
+            level=_SOON_CALLBACK_LEVEL,
+            when=self.time(),
+            index=self._callbacks_counter)
 
     def _wait_for_next_callback(self):
         sleep_duration = self._get_time_till_next_callback()
