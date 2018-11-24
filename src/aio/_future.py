@@ -73,9 +73,12 @@ class Future(_base_future.BaseFuture):
     def get_loop(self) -> _loop.Loop:
         return self._loop
 
-    def __await__(self):
+    def __iter__(self):
         yield self
         return self.result()
+
+    def __await__(self):
+        return (yield from self.__iter__())
 
     def _schedule_callbacks(self):
         logger.debug('Scheduling callbacks for %s', self)
