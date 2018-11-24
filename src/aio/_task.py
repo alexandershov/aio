@@ -17,7 +17,7 @@ def ensure_future(obj):
     elif inspect.isawaitable(obj):
         return Task(_wrap_awaitable(obj))
     else:
-        raise TypeError
+        raise TypeError(f'{obj!r} should be Future, coroutine, or awaitable')
 
 
 async def _wrap_awaitable(awaitable):

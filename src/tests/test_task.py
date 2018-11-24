@@ -27,5 +27,10 @@ def test_ensure_future_on_future(future):
     assert aio.ensure_future(future) is future
 
 
+def test_ensure_future_on_int():
+    with pytest.raises(TypeError):
+        aio.ensure_future(9)
+
+
 async def _coro_pass():
     pass
