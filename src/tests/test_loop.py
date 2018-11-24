@@ -158,10 +158,19 @@ def test_coroutine_with_done_future(loop, future):
 
 
 def test_callback_exception(loop):
+    num_exceptions = 0
+
+    def _counting_exception_handler(_loop, context):
+        del context  # unused
+        nonlocal num_exceptions
+        num_exceptions += 1
+
+    loop.set_exception_handler(_counting_exception_handler)
     loop.call_soon(_always_raises, ZeroDivisionError)
     loop.call_soon(_Stopper(loop))
     loop.run_forever()
     assert not loop.is_running()
+    assert num_exceptions == 1
 
 
 def test_call_soon_handle(loop):
