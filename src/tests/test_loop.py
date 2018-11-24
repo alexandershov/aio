@@ -138,7 +138,7 @@ def test_coroutine(loop):
 
 
 def test_coroutine_exception(loop):
-    task = aio.Task(_coro_zero_division())
+    task = aio.Task(_coro_always_raises(ZeroDivisionError))
     with pytest.raises(ZeroDivisionError):
         loop.run_until_complete(task)
     with pytest.raises(ZeroDivisionError):
@@ -466,8 +466,8 @@ async def _wait(future):
     return await future
 
 
-async def _coro_zero_division():
-    return 1 / 0
+async def _coro_always_raises(exception):
+    raise exception
 
 
 async def _coro_add(x, y):
