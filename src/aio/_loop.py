@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 _SOON_CALLBACK_LEVEL = 0
 _DELAYED_CALLBACK_LEVEL = 1
+_MISSING = object()
 
 
 @dataclass(frozen=True, order=True)
@@ -219,7 +220,6 @@ class Loop:
         return f'<Loop {state}>'
 
 
-_MISSING = object()
 _loop: Loop = _MISSING
 
 
