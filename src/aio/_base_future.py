@@ -43,3 +43,11 @@ class BaseFuture(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def get_loop(self) -> _loop.Loop:
         raise NotImplementedError
+
+    @abc.abstractmethod
+    def __await__(self):
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def __iter__(self):
+        raise NotImplementedError
