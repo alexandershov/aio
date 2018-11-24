@@ -86,6 +86,13 @@ class Task(_base_future.BaseFuture):
     def get_loop(self) -> _loop.Loop:
         return self._loop
 
+    def __iter__(self):
+        yield self
+        return self.result()
+
+    def __await__(self):
+        return (yield from self)
+
     def _run(self):
         if self.done():
             logger.debug('%s is done, nothing to run', self)

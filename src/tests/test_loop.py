@@ -157,6 +157,12 @@ def test_coroutine_with_done_future(loop, future):
     assert result == 9
 
 
+def test_coroutine_with_task(loop):
+    inner_task = aio.ensure_future(_coro_returning(9))
+    task = aio.Task(_wait(inner_task))
+    assert loop.run_until_complete(task) == 9
+
+
 def test_exception_handler(loop):
     num_exceptions = 0
 
