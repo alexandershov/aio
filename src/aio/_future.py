@@ -62,7 +62,7 @@ class Future(_base_future.BaseFuture):
     def cancel(self) -> bool:
         logger.debug('Cancelling %s', self)
         if self.done():
-            logger.debug('Can\'t cancel %s, because it\'s already done', self)
+            logger.debug("Can't cancel %s, because it's already done", self)
             return False
         self.set_exception(_errors.CancelledError)
         self._cancelled = True
