@@ -382,6 +382,12 @@ def test_all_tasks(loop):
     assert tasks == [{task}]
 
 
+def test_ensure_future_on_coroutine(loop):
+    future = aio.ensure_future(_coro_returning(9))
+    assert isinstance(future, aio.Task)
+    assert loop.run_until_complete(future) == 9
+
+
 async def _coro_append_all_tasks(tasks):
     tasks.append(set(aio.all_tasks()))
 
