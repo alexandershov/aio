@@ -32,8 +32,8 @@ def test_call_later(loop):
 def test_call_at(loop):
     calls = []
     now = loop.time()
-    loop.call_at(now + 0.0002, lambda: calls.append('second'))
     loop.call_at(now - 0.0001, lambda: calls.append('first'))
+    loop.call_at(now + 0.0002, lambda: calls.append('second'))
     loop.call_at(now + 0.0003, _Stopper(loop))
     loop.run_forever()
     assert calls == ['first', 'second']
