@@ -66,7 +66,7 @@ class TimerHandle(Handle):
 
 class Loop:
     def __init__(self):
-        self._callbacks: tp.List[tp.Tuple[_Priority, _Callback]] = []
+        self._queue: tp.List[tp.Tuple[_Priority, _Callback]] = []
         self._callbacks_counter = 0
         self._running = False
         self._is_closed = False
@@ -134,7 +134,7 @@ class Loop:
         assert not self._pending_callbacks
         now = self.time()
         while self._has_ready_callback(now):
-            _, callback = heapq.heappop(self._callbacks)
+            _, callback = heapq.heappop(self._queue)
             self._pending_callbacks.append(callback)
 
     def _call_pending_callbacks(self):
@@ -192,23 +192,23 @@ class Loop:
             raise RuntimeError('Event loop is closed')
 
     def _has_ready_callback(self, now: float) -> bool:
-        if not self._callbacks:
+        if not self._queue:
             return False
         return self._get_when_of_next_callback() <= now
 
     def _get_time_till_next_callback(self):
-        if not self._callbacks:
+        if not self._queue:
             return 1.0
         return max(0.0, self._get_when_of_next_callback() - self.time())
 
     def _get_when_of_next_callback(self):
-        assert self._callbacks
-        priority, _ = self._callbacks[0]
+        assert self._queue
+        priority, _ = self._queue[0]
         return priority.when
 
     def _add_callback(self, priority: _Priority, callback: _Callback) -> None:
         logger.debug('Adding %s to %s', callback, self)
-        heapq.heappush(self._callbacks, (priority, callback))
+        heapq.heappush(self._queue, (priority, callback))
         self._callbacks_counter += 1
 
     def __str__(self):
