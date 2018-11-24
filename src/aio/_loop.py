@@ -77,8 +77,12 @@ class Handle:
 
 
 class TimerHandle(Handle):
+    def __init__(self, callback: _Callback, when: float) -> None:
+        super().__init__(callback)
+        self._when = when
+
     def when(self) -> float:
-        return self._callback.when
+        return self._when
 
 
 class Loop:
@@ -121,7 +125,7 @@ class Loop:
             function=callback,
             args=args)
         self._add_callback(priority, callback)
-        return TimerHandle(callback)
+        return TimerHandle(callback, priority.when)
 
     # noinspection PyMethodMayBeStatic
     def time(self) -> float:
