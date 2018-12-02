@@ -95,7 +95,7 @@ class Task(_base_future.BaseFuture):
         self._state = 'running'
         self.get_loop().set_current_task(self)
         try:
-            future = self._continue_coro()
+            future = self._wake_up()
         except StopIteration as exc:
             self._mark_as_done(exc.value)
         except _errors.CancelledError:
@@ -134,7 +134,7 @@ class Task(_base_future.BaseFuture):
         self._state = 'done'
         self._future.set_result(result)
 
-    def _continue_coro(self):
+    def _wake_up(self):
         if self._cancelling:
             if self._aio_future_blocking is None:
                 return self._coro.throw(_errors.CancelledError)
