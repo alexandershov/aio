@@ -105,6 +105,7 @@ class Task(_base_future.BaseFuture):
     def _wake_up(self):
         self._mark_as_running()
         if self._force_cancel_on_waking_up:
+            self._force_cancel_on_waking_up = False
             return self._coro.throw(_errors.CancelledError)
         return self._coro.send(None)
 
@@ -137,8 +138,6 @@ class Task(_base_future.BaseFuture):
         future.add_done_callback(lambda _: self._run())
 
     def _hibernate(self):
-        if self._force_cancel_on_waking_up:
-            self._force_cancel_on_waking_up = False
         self.get_loop().set_current_task(None)
 
     def _mark_as_running(self):
