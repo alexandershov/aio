@@ -105,35 +105,6 @@ class Task(_base_future.BaseFuture):
             self._block_on(future)
         self._hibernate()
 
-    def _wait_for_cancel(self):
-        logger.debug('%s is waiting for %s to cancel', self, self._aio_future_blocking)
-
-    def _hibernate(self):
-        if self._cancelling:
-            self._cancelling = False
-        self.get_loop().set_current_task(None)
-
-    def _block_on(self, future):
-        if not isinstance(future, _base_future.BaseFuture):
-            raise RuntimeError(f'{future!r} is not a future')
-        self._aio_future_blocking = future
-        future.add_done_callback(lambda _: self._run())
-
-    def _mark_as_failed(self, exception):
-        logger.debug('%s is failed with exception %s', self, exception)
-        self._state = 'done'
-        self._future.set_exception(exception)
-
-    def _mark_as_cancelled(self):
-        logger.debug('%s is cancelled', self)
-        self._state = 'cancelled'
-        self._future.cancel()
-
-    def _mark_as_done(self, result):
-        logger.debug('%s is done with result %s', self, result)
-        self._state = 'done'
-        self._future.set_result(result)
-
     def _wake_up(self):
         self._mark_as_running()
         if self._cancelling:
@@ -143,8 +114,36 @@ class Task(_base_future.BaseFuture):
                 raise _WaitForCancel
             else:
                 return self._coro.throw(_errors.CancelledError)
-
         return self._coro.send(None)
+
+    def _mark_as_done(self, result):
+        logger.debug('%s is done with result %s', self, result)
+        self._state = 'done'
+        self._future.set_result(result)
+
+    def _mark_as_cancelled(self):
+        logger.debug('%s is cancelled', self)
+        self._state = 'cancelled'
+        self._future.cancel()
+
+    def _wait_for_cancel(self):
+        logger.debug('%s is waiting for %s to cancel', self, self._aio_future_blocking)
+
+    def _mark_as_failed(self, exception):
+        logger.debug('%s is failed with exception %s', self, exception)
+        self._state = 'done'
+        self._future.set_exception(exception)
+
+    def _block_on(self, future):
+        if not isinstance(future, _base_future.BaseFuture):
+            raise RuntimeError(f'{future!r} is not a future')
+        self._aio_future_blocking = future
+        future.add_done_callback(lambda _: self._run())
+
+    def _hibernate(self):
+        if self._cancelling:
+            self._cancelling = False
+        self.get_loop().set_current_task(None)
 
     def _mark_as_running(self):
         logger.debug('Running %s', self)
