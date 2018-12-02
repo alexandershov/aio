@@ -317,16 +317,6 @@ def test_cancel_task_blocking_on_done_future(loop, future):
     assert not task.cancelled()
 
 
-async def _wait_and_sleep_after_cancel(future):
-    try:
-        await future
-    except aio.CancelledError:
-        await _sleep(0.0001)
-        return -9
-    else:
-        return future.result()
-
-
 def test_run():
     assert aio.run(_coro_returning(9)) == 9
 
@@ -437,6 +427,16 @@ class _Awaitable:
     def __await__(self):
         result = yield from self._future
         return result
+
+
+async def _wait_and_sleep_after_cancel(future):
+    try:
+        await future
+    except aio.CancelledError:
+        await _sleep(0.0001)
+        return -9
+    else:
+        return future.result()
 
 
 async def _coro_append_all_tasks(tasks):
