@@ -39,7 +39,7 @@ class Task(_base_future.BaseFuture):
         self._state = 'pending'
         self._future = _future.Future()
         self._aio_future_blocking: tp.Optional[_base_future.BaseFuture] = None
-        self._force_cancel_on_waking_up = False
+        self._needs_to_force_cancel = False
         self._loop = _loop.get_event_loop()
         self._loop.add_task(self)
         self._loop.call_soon(self._run)
@@ -71,8 +71,8 @@ class Task(_base_future.BaseFuture):
         if self.done():
             logger.debug("Can't cancel %s, because it's already done", self)
             return False
-        self._set_force_cancel_on_waking_up()
-        if self._force_cancel_on_waking_up:
+        self._set_needs_to_force_cancel()
+        if self._needs_to_force_cancel:
             logger.debug('Will force cancel of %s on the next waking up', self)
         return True
 
@@ -104,12 +104,12 @@ class Task(_base_future.BaseFuture):
 
     def _wake_up(self):
         self._mark_as_running()
-        if self._force_cancel_on_waking_up:
-            self._force_cancel_on_waking_up = False
+        if self._needs_to_force_cancel:
+            self._needs_to_force_cancel = False
             return self._coro.throw(_errors.CancelledError)
         return self._coro.send(None)
 
-    def _needs_to_force_cancel_on_waking_up(self) -> bool:
+    def _determine_if_needs_to_force_cancel(self) -> bool:
         if self._aio_future_blocking is None:
             return True
         if self._aio_future_blocking.cancelled():
@@ -135,12 +135,12 @@ class Task(_base_future.BaseFuture):
         if not isinstance(future, _base_future.BaseFuture):
             raise RuntimeError(f'{future!r} is not a future')
         self._aio_future_blocking = future
-        if self._force_cancel_on_waking_up:
-            self._set_force_cancel_on_waking_up()
+        if self._needs_to_force_cancel:
+            self._set_needs_to_force_cancel()
         future.add_done_callback(lambda _: self._run())
 
-    def _set_force_cancel_on_waking_up(self):
-        self._force_cancel_on_waking_up = self._needs_to_force_cancel_on_waking_up()
+    def _set_needs_to_force_cancel(self):
+        self._needs_to_force_cancel = self._determine_if_needs_to_force_cancel()
 
     def _hibernate(self):
         self.get_loop().set_current_task(None)
