@@ -135,6 +135,8 @@ class Task(_base_future.BaseFuture):
         if not isinstance(future, _base_future.BaseFuture):
             raise RuntimeError(f'{future!r} is not a future')
         self._aio_future_blocking = future
+        if self._force_cancel_on_waking_up:
+            self._force_cancel_on_waking_up = self._needs_to_force_cancel_on_waking_up()
         future.add_done_callback(lambda _: self._run())
 
     def _hibernate(self):
@@ -143,6 +145,7 @@ class Task(_base_future.BaseFuture):
     def _mark_as_running(self):
         logger.debug('Running %s', self)
         self._state = 'running'
+        self._aio_future_blocking = None
         self.get_loop().set_current_task(self)
 
     def __str__(self) -> str:
