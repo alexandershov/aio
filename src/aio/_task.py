@@ -87,9 +87,6 @@ class Task(_base_future.BaseFuture):
         return (yield from self)
 
     def _run(self):
-        if self.done():
-            logger.debug('%s is done, nothing to run', self)
-            return
         try:
             future = self._wake_up()
         except StopIteration as exc:
