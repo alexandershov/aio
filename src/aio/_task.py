@@ -71,7 +71,7 @@ class Task(_base_future.BaseFuture):
         if self.done():
             logger.debug("Can't cancel %s, because it's already done", self)
             return False
-        self._force_cancel_on_waking_up = self._needs_to_force_cancel_on_waking_up()
+        self._set_force_cancel_on_waking_up()
         if self._force_cancel_on_waking_up:
             logger.debug('Will force cancel of %s on the next waking up', self)
         return True
@@ -136,8 +136,11 @@ class Task(_base_future.BaseFuture):
             raise RuntimeError(f'{future!r} is not a future')
         self._aio_future_blocking = future
         if self._force_cancel_on_waking_up:
-            self._force_cancel_on_waking_up = self._needs_to_force_cancel_on_waking_up()
+            self._set_force_cancel_on_waking_up()
         future.add_done_callback(lambda _: self._run())
+
+    def _set_force_cancel_on_waking_up(self):
+        self._force_cancel_on_waking_up = self._needs_to_force_cancel_on_waking_up()
 
     def _hibernate(self):
         self.get_loop().set_current_task(None)
