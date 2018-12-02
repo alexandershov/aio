@@ -134,7 +134,8 @@ class Task(_base_future.BaseFuture):
                 return self._coro.throw(_errors.CancelledError)
             if self._aio_future_blocking.cancel():
                 raise _WaitForCancel
-            return self._coro.throw(_errors.CancelledError)
+            else:
+                return self._coro.throw(_errors.CancelledError)
 
         return self._coro.send(None)
 
