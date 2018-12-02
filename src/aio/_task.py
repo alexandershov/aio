@@ -132,9 +132,10 @@ class Task(_base_future.BaseFuture):
         if self._cancelling:
             if self._aio_future_blocking is None:
                 return self._coro.throw(_errors.CancelledError)
-            if not self._aio_future_blocking.cancel():
-                return self._coro.throw(_errors.CancelledError)
-            raise _WaitForCancel
+            if self._aio_future_blocking.cancel():
+                raise _WaitForCancel
+            return self._coro.throw(_errors.CancelledError)
+
         return self._coro.send(None)
 
     def __str__(self) -> str:
