@@ -308,14 +308,23 @@ def test_cancel_task_cancels_future_blocking(loop, future):
     assert future.cancelled()
 
 
+def test_cancel_task_blocking_on_done_future(loop, future):
+    task = aio.Task(_wait_and_sleep_after_cancel(future))
+    loop.call_soon(future.set_result, 9)
+    loop.call_soon(task.cancel)
+    assert loop.run_until_complete(task) == -9
+    assert not future.cancelled()
+    assert not task.cancelled()
+
+
 async def _wait_and_sleep_after_cancel(future):
     try:
         await future
     except aio.CancelledError:
-        await _sleep(0.001)
+        await _sleep(1)
         return -9
     else:
-        return 9
+        return future.result()
 
 
 def test_run():
