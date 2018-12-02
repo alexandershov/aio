@@ -108,11 +108,13 @@ class Task(_base_future.BaseFuture):
     def _wake_up(self):
         self._mark_as_running()
         if self._cancelling:
-            if self._cancel_aio_future_blocking():
-                raise _WaitForCancel
-            else:
-                return self._coro.throw(_errors.CancelledError)
+            return self._do_cancel()
         return self._coro.send(None)
+
+    def _do_cancel(self):
+        if self._cancel_aio_future_blocking():
+            raise _WaitForCancel
+        return self._coro.throw(_errors.CancelledError)
 
     def _cancel_aio_future_blocking(self) -> bool:
         if self._aio_future_blocking is None:
