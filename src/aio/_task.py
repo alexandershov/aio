@@ -103,8 +103,7 @@ class Task(_base_future.BaseFuture):
         except _WaitForCancel:
             pass
         except Exception as exc:
-            self._state = 'done'
-            self._future.set_exception(exc)
+            self._mark_as_failed(exc)
         else:
             if not isinstance(future, _base_future.BaseFuture):
                 raise RuntimeError(f'{future!r} is not a future')
@@ -113,6 +112,10 @@ class Task(_base_future.BaseFuture):
         if self._cancelling:
             self._cancelling = False
         self.get_loop().set_current_task(None)
+
+    def _mark_as_failed(self, exception):
+        self._state = 'done'
+        self._future.set_exception(exception)
 
     def _mark_as_cancelled(self):
         self._state = 'cancelled'
