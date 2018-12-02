@@ -317,6 +317,17 @@ def test_cancel_task_blocking_on_done_future(loop, future):
     assert not task.cancelled()
 
 
+async def _coro_cancel_itself():
+    aio.current_task().cancel()
+    await _sleep(0.0001)
+
+
+def test_cancel_itself(loop):
+    task = aio.Task(_coro_cancel_itself())
+    with pytest.raises(aio.CancelledError):
+        loop.run_until_complete(task)
+
+
 def test_run():
     assert aio.run(_coro_returning(9)) == 9
 
