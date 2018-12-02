@@ -1,5 +1,6 @@
 import inspect
 import logging
+import typing as tp
 
 from . import _base_future
 from . import _errors
@@ -37,7 +38,7 @@ class Task(_base_future.BaseFuture):
         self._coro = coro
         self._state = 'pending'
         self._future = _future.Future()
-        self._aio_future_blocking = None
+        self._aio_future_blocking: tp.Optional[_base_future.BaseFuture] = None
         self._force_cancel_on_waking_up = False
         self._loop = _loop.get_event_loop()
         self._loop.add_task(self)
@@ -70,7 +71,7 @@ class Task(_base_future.BaseFuture):
         if self.done():
             logger.debug("Can't cancel %s, because it's already done", self)
             return False
-        self._force_cancel_on_waking_up = not self._cancel_aio_future_blocking()
+        self._force_cancel_on_waking_up = self._needs_to_force_cancel_on_waking_up()
         if self._force_cancel_on_waking_up:
             logger.debug('Will force cancel of %s on the next waking up', self)
         return True
@@ -107,10 +108,12 @@ class Task(_base_future.BaseFuture):
             return self._coro.throw(_errors.CancelledError)
         return self._coro.send(None)
 
-    def _cancel_aio_future_blocking(self) -> bool:
+    def _needs_to_force_cancel_on_waking_up(self) -> bool:
         if self._aio_future_blocking is None:
+            return True
+        if self._aio_future_blocking.cancelled():
             return False
-        return self._aio_future_blocking.cancel()
+        return not self._aio_future_blocking.cancel()
 
     def _mark_as_done(self, result):
         logger.debug('%s is done with result %s', self, result)
