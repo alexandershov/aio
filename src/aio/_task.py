@@ -108,13 +108,16 @@ class Task(_base_future.BaseFuture):
     def _wake_up(self):
         self._mark_as_running()
         if self._cancelling:
-            if self._aio_future_blocking is None:
-                return self._coro.throw(_errors.CancelledError)
-            if self._aio_future_blocking.cancel():
+            if self._cancel_aio_future_blocking():
                 raise _WaitForCancel
             else:
                 return self._coro.throw(_errors.CancelledError)
         return self._coro.send(None)
+
+    def _cancel_aio_future_blocking(self) -> bool:
+        if self._aio_future_blocking is None:
+            return False
+        return self._aio_future_blocking.cancel()
 
     def _mark_as_done(self, result):
         logger.debug('%s is done with result %s', self, result)
