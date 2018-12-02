@@ -99,8 +99,7 @@ class Task(_base_future.BaseFuture):
         except StopIteration as exc:
             self._mark_as_done(exc.value)
         except _errors.CancelledError:
-            self._state = 'cancelled'
-            self._future.cancel()
+            self._mark_as_cancelled()
         except _WaitForCancel:
             pass
         except Exception as exc:
@@ -114,6 +113,10 @@ class Task(_base_future.BaseFuture):
         if self._cancelling:
             self._cancelling = False
         self.get_loop().set_current_task(None)
+
+    def _mark_as_cancelled(self):
+        self._state = 'cancelled'
+        self._future.cancel()
 
     def _mark_as_done(self, result):
         self._state = 'done'
