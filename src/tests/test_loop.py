@@ -321,7 +321,7 @@ async def _wait_and_sleep_after_cancel(future):
     try:
         await future
     except aio.CancelledError:
-        await _sleep(1)
+        await _sleep(0.0001)
         return -9
     else:
         return future.result()
