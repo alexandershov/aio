@@ -71,6 +71,8 @@ class Task(_base_future.BaseFuture):
             logger.debug("Can't cancel %s, because it's already done", self)
             return False
         self._cancelling = not self._cancel_aio_future_blocking()
+        if self._cancelling:
+            logger.debug('Will force cancel of %s at the next wake up', self)
         return True
 
     def cancelled(self) -> bool:
