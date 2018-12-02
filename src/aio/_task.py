@@ -37,8 +37,8 @@ class Task(_base_future.BaseFuture):
         self._coro = coro
         self._state = 'pending'
         self._future = _future.Future()
-        self._cancelling = False
         self._aio_future_blocking = None
+        self._cancelling = False
         self._loop = _loop.get_event_loop()
         self._loop.add_task(self)
         self._loop.call_soon(self._run)
