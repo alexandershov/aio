@@ -72,8 +72,6 @@ class Task(_base_future.BaseFuture):
             logger.debug("Can't cancel %s, because it's already done", self)
             return False
         self._set_needs_to_force_cancel()
-        if self._needs_to_force_cancel:
-            logger.debug('Will force cancel of %s on the next waking up', self)
         return True
 
     def cancelled(self) -> bool:
@@ -141,6 +139,8 @@ class Task(_base_future.BaseFuture):
 
     def _set_needs_to_force_cancel(self):
         self._needs_to_force_cancel = self._determine_if_needs_to_force_cancel()
+        if self._needs_to_force_cancel:
+            logger.debug('Will force cancel of %s on the next waking up', self)
 
     def _hibernate(self):
         self.get_loop().set_current_task(None)
