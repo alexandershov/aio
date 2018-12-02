@@ -106,6 +106,9 @@ class Task(_base_future.BaseFuture):
             self._mark_as_failed(exc)
         else:
             self._block_on(future)
+        self._hibernate()
+
+    def _hibernate(self):
         if self._cancelling:
             self._cancelling = False
         self.get_loop().set_current_task(None)
