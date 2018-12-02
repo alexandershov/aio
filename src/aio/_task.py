@@ -91,9 +91,6 @@ class Task(_base_future.BaseFuture):
         if self.done():
             logger.debug('%s is done, nothing to run', self)
             return
-        logger.debug('Running %s', self)
-        self._state = 'running'
-        self.get_loop().set_current_task(self)
         try:
             future = self._wake_up()
         except StopIteration as exc:
@@ -135,6 +132,7 @@ class Task(_base_future.BaseFuture):
         self._future.set_result(result)
 
     def _wake_up(self):
+        self._mark_as_running()
         if self._cancelling:
             if self._aio_future_blocking is None:
                 return self._coro.throw(_errors.CancelledError)
@@ -144,6 +142,11 @@ class Task(_base_future.BaseFuture):
                 return self._coro.throw(_errors.CancelledError)
 
         return self._coro.send(None)
+
+    def _mark_as_running(self):
+        logger.debug('Running %s', self)
+        self._state = 'running'
+        self.get_loop().set_current_task(self)
 
     def __str__(self) -> str:
         return f'<Task {self._state} {self._coro}>'
