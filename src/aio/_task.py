@@ -98,12 +98,15 @@ class Task(_base_future.BaseFuture):
         except _errors.CancelledError:
             self._mark_as_cancelled()
         except _WaitForCancel:
-            pass
+            self._wait_for_cancel()
         except Exception as exc:
             self._mark_as_failed(exc)
         else:
             self._block_on(future)
         self._hibernate()
+
+    def _wait_for_cancel(self):
+        logger.debug('%s is waiting for %s to cancel', self, self._aio_future_blocking)
 
     def _hibernate(self):
         if self._cancelling:
