@@ -70,8 +70,7 @@ class Task(_base_future.BaseFuture):
         if self.done():
             logger.debug("Can't cancel %s, because it's already done", self)
             return False
-        self._cancelling = True
-        self._loop.call_soon(self._run)
+        self._cancelling = not self._cancel_aio_future_blocking()
         return True
 
     def cancelled(self) -> bool:
@@ -97,8 +96,6 @@ class Task(_base_future.BaseFuture):
             self._mark_as_done(exc.value)
         except _errors.CancelledError:
             self._mark_as_cancelled()
-        except _WaitForCancel:
-            self._wait_for_cancel()
         except Exception as exc:
             self._mark_as_failed(exc)
         else:
@@ -108,13 +105,8 @@ class Task(_base_future.BaseFuture):
     def _wake_up(self):
         self._mark_as_running()
         if self._cancelling:
-            return self._do_cancel()
+            return self._coro.throw(_errors.CancelledError)
         return self._coro.send(None)
-
-    def _do_cancel(self):
-        if self._cancel_aio_future_blocking():
-            raise _WaitForCancel
-        return self._coro.throw(_errors.CancelledError)
 
     def _cancel_aio_future_blocking(self) -> bool:
         if self._aio_future_blocking is None:
@@ -130,9 +122,6 @@ class Task(_base_future.BaseFuture):
         logger.debug('%s is cancelled', self)
         self._state = 'cancelled'
         self._future.cancel()
-
-    def _wait_for_cancel(self):
-        logger.debug('%s is waiting for %s to cancel', self, self._aio_future_blocking)
 
     def _mark_as_failed(self, exception):
         logger.debug('%s is failed with exception %s', self, exception)
@@ -164,7 +153,3 @@ class Task(_base_future.BaseFuture):
 
 async def _wrap_awaitable(awaitable):
     return await awaitable
-
-
-class _WaitForCancel(Exception):
-    pass
