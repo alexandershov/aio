@@ -38,7 +38,7 @@ class Task(_base_future.BaseFuture):
         self._state = 'pending'
         self._future = _future.Future()
         self._aio_future_blocking = None
-        self._cancelling = False
+        self._force_cancel_on_waking_up = False
         self._loop = _loop.get_event_loop()
         self._loop.add_task(self)
         self._loop.call_soon(self._run)
@@ -70,9 +70,9 @@ class Task(_base_future.BaseFuture):
         if self.done():
             logger.debug("Can't cancel %s, because it's already done", self)
             return False
-        self._cancelling = not self._cancel_aio_future_blocking()
-        if self._cancelling:
-            logger.debug('Will force cancel of %s at the next wake up', self)
+        self._force_cancel_on_waking_up = not self._cancel_aio_future_blocking()
+        if self._force_cancel_on_waking_up:
+            logger.debug('Will force cancel of %s on the next waking up', self)
         return True
 
     def cancelled(self) -> bool:
@@ -103,7 +103,7 @@ class Task(_base_future.BaseFuture):
 
     def _wake_up(self):
         self._mark_as_running()
-        if self._cancelling:
+        if self._force_cancel_on_waking_up:
             return self._coro.throw(_errors.CancelledError)
         return self._coro.send(None)
 
@@ -134,8 +134,8 @@ class Task(_base_future.BaseFuture):
         future.add_done_callback(lambda _: self._run())
 
     def _hibernate(self):
-        if self._cancelling:
-            self._cancelling = False
+        if self._force_cancel_on_waking_up:
+            self._force_cancel_on_waking_up = False
         self.get_loop().set_current_task(None)
 
     def _mark_as_running(self):
