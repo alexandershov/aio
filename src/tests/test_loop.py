@@ -322,7 +322,7 @@ async def _coro_cancel_itself(future):
     await future
 
 
-async def _coro_cancel_itself_after_await(future):
+async def _coro_cancel_itself_after_sleep(future):
     await _sleep(0.0001)
     aio.current_task().cancel()
     await future
@@ -330,6 +330,12 @@ async def _coro_cancel_itself_after_await(future):
 
 def test_cancel_itself(loop, future):
     task = aio.Task(_coro_cancel_itself(future))
+    with pytest.raises(aio.CancelledError):
+        loop.run_until_complete(task)
+
+
+def test_cancel_itself_after_await(loop, future):
+    task = aio.Task(_coro_cancel_itself_after_sleep(future))
     with pytest.raises(aio.CancelledError):
         loop.run_until_complete(task)
 
