@@ -424,7 +424,7 @@ def test_ensure_future_on_coroutine(loop):
     assert loop.run_until_complete(task) == 9
 
 
-def test_ensure_future_on_awaitable(future, loop):
+def test_ensure_future_on_awaitable(loop, future):
     task = aio.ensure_future(_Awaitable(future))
     assert isinstance(task, aio.Task)
     loop.call_soon(future.set_result, 9)
