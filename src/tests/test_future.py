@@ -104,5 +104,11 @@ def test_remove_non_existing_done_callback(future):
     assert future.remove_done_callback(_do_nothing_callback) == 0
 
 
+def test_get_loop():
+    loop = aio.new_event_loop()
+    future = aio.Future(loop=loop)
+    assert future.get_loop() is loop
+
+
 def _do_nothing_callback(future):
     del future  # unused

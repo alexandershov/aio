@@ -12,13 +12,15 @@ _MISSING = object()
 
 
 class Future(_base_future.BaseFuture):
-    def __init__(self):
+    def __init__(self, *, loop=None):
         self._result = _MISSING
         self._exception: Exception = _MISSING
         self._callbacks = collections.deque()
         self._done = False
         self._cancelled = False
-        self._loop = _loop.get_event_loop()
+        if loop is None:
+            loop = _loop.get_event_loop()
+        self._loop = loop
 
     def result(self) -> object:
         self._require_done()
