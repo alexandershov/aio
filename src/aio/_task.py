@@ -117,14 +117,17 @@ class Task(_base_future.BaseFuture):
         future.add_done_callback(lambda _: self._run())
 
     def _mark_as_failed(self, exception):
+        logger.debug('%s is failed with exception %s', self, exception)
         self._state = 'done'
         self._future.set_exception(exception)
 
     def _mark_as_cancelled(self):
+        logger.debug('%s is cancelled', self)
         self._state = 'cancelled'
         self._future.cancel()
 
     def _mark_as_done(self, result):
+        logger.debug('%s is done with result %s', self, result)
         self._state = 'done'
         self._future.set_result(result)
 
