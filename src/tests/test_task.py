@@ -32,5 +32,11 @@ def test_ensure_future_on_int():
         aio.ensure_future(9)
 
 
+def test_get_loop(coro):
+    loop = aio.new_event_loop()
+    task = aio.Task(coro, loop=loop)
+    assert task.get_loop() is loop
+
+
 async def _coro_pass():
     pass

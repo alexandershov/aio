@@ -34,13 +34,15 @@ def all_tasks(loop=None):
 
 
 class Task(_base_future.BaseFuture):
-    def __init__(self, coro):
+    def __init__(self, coro, *, loop=None):
         self._coro = coro
         self._state = 'pending'
         self._future = _future.Future()
         self._aio_future_blocking: tp.Optional[_base_future.BaseFuture] = None
         self._needs_to_force_cancel = False
-        self._loop = _loop.get_event_loop()
+        if loop is None:
+            loop = _loop.get_event_loop()
+        self._loop = loop
         self._loop.add_task(self)
         self._loop.call_soon(self._run)
         logger.debug('Created %s', self)
